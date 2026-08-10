@@ -1,12 +1,15 @@
 import { LightningElement } from 'lwc';
-import LightningAlert from 'lightning/alert';
 
 export default class SiteHeader extends LightningElement {
-    async handleBookClick() {
-        await LightningAlert.open({
-            message: `This feature isn't implemented, check again later.`,
-            theme: 'warn',
-            label: 'Not Implemented'
+    // Booking starts at the experiences browser further down the home page —
+    // pick an experience, pick a session, and the Book button runs the
+    // BotShield confirmation gate. BOOK NOW just takes the guest there.
+    handleBookClick(event) {
+        event.preventDefault(); // href="#" would jump back to the top
+        window.scrollBy({
+            top: window.innerHeight,
+            left: 0,
+            behavior: 'smooth'
         });
     }
 }
