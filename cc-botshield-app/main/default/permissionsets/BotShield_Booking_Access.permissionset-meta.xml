@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>BotShield Booking Access</label>
+    <description>Grants the Apex entry point for the BotShield-gated Book Now flow on the Coral Cloud site. Assign to the site guest user and any test users.</description>
+    <hasActivationRequired>false</hasActivationRequired>
+    <classAccesses>
+        <apexClass>BotShieldBookingController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+</PermissionSet>

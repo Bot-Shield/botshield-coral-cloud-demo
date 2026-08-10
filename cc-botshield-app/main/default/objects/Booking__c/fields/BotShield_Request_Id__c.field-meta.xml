@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>BotShield_Request_Id__c</fullName>
+    <description>Idempotency key linking this booking to its BotShield confirmation request (Q Card). Set at propose time; the booking activates only when this request is approved by the guest in the BotShield app.</description>
+    <externalId>true</externalId>
+    <label>BotShield Request Id</label>
+    <length>64</length>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>true</unique>
+</CustomField>

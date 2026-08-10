@@ -1,5 +1,5 @@
 import { LightningElement, api, wire } from 'lwc';
-import LightningAlert from 'lightning/alert';
+import { refreshApex } from '@salesforce/apex';
 import { NavigationMixin } from 'lightning/navigation';
 import getExperienceSessionsForDate from '@salesforce/apex/ExperienceController.getExperienceSessionsForDate';
 import isCommunity from '@salesforce/apex/ContextService.isCommunity';
@@ -24,6 +24,9 @@ export default class ExperienceSchedule extends NavigationMixin(
     loading = true;
     date = new Date();
     isCommunity;
+    bookingSession = null;
+    showBookingGate = false;
+    wiredSessionsResult;
 
     @wire(isCommunity)
     wiredCommunityInfo({ error, data }) {
@@ -40,7 +43,9 @@ export default class ExperienceSchedule extends NavigationMixin(
         experienceId: '$_recordId',
         timestamp: '$timestamp'
     })
-    wiredSessions({ error, data }) {
+    wiredSessions(result) {
+        this.wiredSessionsResult = result;
+        const { error, data } = result;
         this.loading = false;
         if (error) {
             this.error = error;
@@ -130,11 +135,23 @@ export default class ExperienceSchedule extends NavigationMixin(
         return `${count} sessions are scheduled on this day:`;
     }
 
-    async handleBookSessionClick() {
-        await LightningAlert.open({
-            message: `This feature isn't implemented, check again later.`,
-            theme: 'warn',
-            label: 'Not Implemented'
-        });
+    // Booking runs through the BotShield gate: the guest confirms the Q Card
+    // in their own BotShield app (Face ID) before the booking activates.
+    handleBookSessionClick(event) {
+        const sessionId = event.currentTarget.dataset.id;
+        this.bookingSession = this.sessions.find((s) => s.Id === sessionId);
+        this.showBookingGate = true;
+    }
+
+    handleBookingGateClose(event) {
+        this.showBookingGate = false;
+        this.bookingSession = null;
+        if (event.detail?.refresh) {
+            refreshApex(this.wiredSessionsResult);
+        }
+    }
+
+    get dateIso() {
+        return this.date.toISOString();
     }
 }
