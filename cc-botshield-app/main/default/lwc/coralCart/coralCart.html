@@ -1,0 +1,137 @@
+<template>
+    <!-- Floating cart button -->
+    <button type="button" class="fab" onclick={handleToggleDrawer} title="Your bookings cart">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        </svg>
+        <span lwc:if={hasItems} class="fab-badge">{count}</span>
+    </button>
+
+    <!-- Backdrop -->
+    <div lwc:if={drawerOpen} class="backdrop" onclick={handleCloseDrawer} role="presentation"></div>
+
+    <!-- Slide-out drawer -->
+    <aside class={drawerClass} aria-label="Booking cart">
+        <header class="drawer-head">
+            <h2>Your Experiences</h2>
+            <button type="button" class="icon-btn" onclick={handleCloseDrawer} title="Close">✕</button>
+        </header>
+
+        <!-- ── Cart ─────────────────────────────────────────────── -->
+        <template lwc:if={isCartPhase}>
+            <div class="drawer-body">
+                <p lwc:if={isEmpty} class="muted center">
+                    Your cart is empty — pick an experience and a session, then add it here.
+                </p>
+                <div lwc:else>
+                    <template for:each={displayItems} for:item="item">
+                    <div key={item.sessionId} class="line">
+                        <div class="line-main">
+                            <div class="line-name">{item.name}</div>
+                            <div class="line-sub">{item.dateLabel} · {item.timeLabel}</div>
+                        </div>
+                        <div class="line-side">
+                            <input
+                                type="number"
+                                min="1"
+                                max="8"
+                                value={item.guests}
+                                data-id={item.sessionId}
+                                onchange={handleGuestsChange}
+                                class="guests"
+                                aria-label="Guests"
+                            />
+                            <span class="line-price">{item.lineTotal}</span>
+                            <button type="button" class="icon-btn" data-id={item.sessionId} onclick={handleRemove} title="Remove">✕</button>
+                        </div>
+                    </div>
+                    </template>
+                </div>
+            </div>
+            <footer class="drawer-foot">
+                <div class="total-row"><span>Total</span><strong>{totalLabel}</strong></div>
+                <button type="button" class="primary" onclick={handleBeginCheckout} disabled={isEmpty}>
+                    Checkout
+                </button>
+                <p class="muted tiny center">Checkout is protected by BotShield — a quick human check comes next.</p>
+            </footer>
+        </template>
+
+        <!-- ── Verify + place ───────────────────────────────────── -->
+        <template lwc:if={isVerifyPhase}>
+            <div class="drawer-body">
+                <button type="button" class="linklike" onclick={handleBackToCart}>← Back to cart</button>
+
+                <label class="field-label" for="cc-email">Booking email</label>
+                <input
+                    id="cc-email"
+                    type="email"
+                    value={email}
+                    onchange={handleEmailChange}
+                    oninput={handleEmailChange}
+                    placeholder="you@example.com"
+                    class="email"
+                />
+
+                <div class="verify-box">
+                    <!-- Census: hosted challenge iframe. The passkey ceremony needs
+                         the publickey-credentials permissions to run cross-origin. -->
+                    <iframe
+                        src={challengeUrl}
+                        title="BotShield human verification"
+                        class="challenge"
+                        allow="publickey-credentials-get *; publickey-credentials-create *"
+                    ></iframe>
+
+                    <p lwc:if={verifyChallenge} class="muted tiny">
+                        An extra verification step is needed.
+                        <button type="button" class="linklike" onclick={handleOpenVerification}>Complete verification</button>
+                        then
+                        <button type="button" class="linklike" onclick={handleRetryChallenge}>re-check</button>.
+                    </p>
+                    <p lwc:if={verifyFailed} class="muted tiny">
+                        Verification didn’t complete.
+                        <button type="button" class="linklike" onclick={handleRetryChallenge}>Try again</button>
+                    </p>
+                </div>
+            </div>
+            <footer class="drawer-foot">
+                <div class="total-row"><span>Total</span><strong>{totalLabel}</strong></div>
+                <button type="button" class="primary" onclick={handleCompleteBooking} disabled={completeDisabled}>
+                    Complete Booking
+                </button>
+                <p class="muted tiny center">The bookings are created only after BotShield verifies the check server-side.</p>
+            </footer>
+        </template>
+
+        <!-- ── Placing ──────────────────────────────────────────── -->
+        <template lwc:if={isPlacing}>
+            <div class="drawer-body center-col">
+                <div class="spinner" role="status" aria-label="Placing your bookings"></div>
+                <p class="muted">Verifying and placing your bookings…</p>
+            </div>
+        </template>
+
+        <!-- ── Done ─────────────────────────────────────────────── -->
+        <template lwc:if={isDone}>
+            <div class="drawer-body center-col">
+                <div class="check">✓</div>
+                <h3>Bookings confirmed</h3>
+                <p lwc:if={bookingNamesLabel} class="muted">Booking numbers: {bookingNamesLabel}</p>
+                <p class="muted tiny">Human-verified checkout, backed by BotShield Census.</p>
+                <button type="button" class="primary" onclick={handleCloseDrawer}>Done</button>
+            </div>
+        </template>
+
+        <!-- ── Error ────────────────────────────────────────────── -->
+        <template lwc:if={isError}>
+            <div class="drawer-body center-col">
+                <h3>Checkout didn’t complete</h3>
+                <p class="muted">{errorMessage}</p>
+                <button type="button" class="primary" onclick={handleTryAgain}>Back to cart</button>
+            </div>
+        </template>
+    </aside>
+</template>

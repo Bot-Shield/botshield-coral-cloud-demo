@@ -265,11 +265,6 @@
         </div>
     </lightning-card>
 
-    <!-- BotShield booking gate: propose → Q Card → Face ID → booking activates -->
-    <c-botshield-booking-gate
-        lwc:if={showBookingGate}
-        session={bookingSession}
-        session-date={dateIso}
-        onclose={handleBookingGateClose}
-    ></c-botshield-booking-gate>
+    <!-- Cart + BotShield Census checkout drawer (mounted once, site-wide UI) -->
+    <c-coral-cart></c-coral-cart>
 </template>

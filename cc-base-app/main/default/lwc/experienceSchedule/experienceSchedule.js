@@ -1,5 +1,4 @@
 import { LightningElement, api, wire } from 'lwc';
-import { refreshApex } from '@salesforce/apex';
 import { NavigationMixin } from 'lightning/navigation';
 import getExperienceSessionsForDate from '@salesforce/apex/ExperienceController.getExperienceSessionsForDate';
 import isCommunity from '@salesforce/apex/ContextService.isCommunity';
@@ -24,9 +23,6 @@ export default class ExperienceSchedule extends NavigationMixin(
     loading = true;
     date = new Date();
     isCommunity;
-    bookingSession = null;
-    showBookingGate = false;
-    wiredSessionsResult;
 
     @wire(isCommunity)
     wiredCommunityInfo({ error, data }) {
@@ -43,9 +39,7 @@ export default class ExperienceSchedule extends NavigationMixin(
         experienceId: '$_recordId',
         timestamp: '$timestamp'
     })
-    wiredSessions(result) {
-        this.wiredSessionsResult = result;
-        const { error, data } = result;
+    wiredSessions({ error, data }) {
         this.loading = false;
         if (error) {
             this.error = error;
@@ -135,23 +129,28 @@ export default class ExperienceSchedule extends NavigationMixin(
         return `${count} sessions are scheduled on this day:`;
     }
 
-    // Booking runs through the BotShield gate: the guest confirms the Q Card
-    // in their own BotShield app (Face ID) before the booking activates.
+    // RAIL CHOICE: the site's own booking flow is the CENSUS rail — a human
+    // present at their browser adds to cart and verifies at checkout (see
+    // coralCart). The Agents Ask / Q rail gates the AGENT chat on this site
+    // instead — software acting for a human asks that human's device. The
+    // button therefore adds to the cart; it does not propose a Q Card.
     handleBookSessionClick(event) {
         const sessionId = event.currentTarget.dataset.id;
-        this.bookingSession = this.sessions.find((s) => s.Id === sessionId);
-        this.showBookingGate = true;
-    }
-
-    handleBookingGateClose(event) {
-        this.showBookingGate = false;
-        this.bookingSession = null;
-        if (event.detail?.refresh) {
-            refreshApex(this.wiredSessionsResult);
+        const session = this.sessions.find((s) => s.Id === sessionId);
+        if (!session) {
+            return;
         }
-    }
-
-    get dateIso() {
-        return this.date.toISOString();
+        window.dispatchEvent(
+            new CustomEvent('coralcloud:addtocart', {
+                detail: {
+                    sessionId: session.Id,
+                    name: session.Experience__r?.Name ?? 'Experience session',
+                    dateIso: this.date.toISOString(),
+                    startMs: session.Start_Time__c,
+                    endMs: session.End_Time__c,
+                    price: session.Experience__r?.Price__c ?? 0
+                }
+            })
+        );
     }
 }

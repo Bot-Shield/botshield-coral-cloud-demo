@@ -7,4 +7,8 @@
         <apexClass>BotShieldBookingController</apexClass>
         <enabled>true</enabled>
     </classAccesses>
+    <classAccesses>
+        <apexClass>BotShieldCensusCheckout</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
 </PermissionSet>

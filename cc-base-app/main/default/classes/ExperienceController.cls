@@ -23,7 +23,8 @@ public with sharing class ExperienceController {
                 Percentage_Booked__c,
                 Start_Time__c,
                 Status__c,
-                Experience__r.Price__c
+                Experience__r.Price__c,
+                Experience__r.Name
             FROM Session__c
             WHERE Experience__c = :experienceId AND Date__c = :dateFilter
             WITH USER_MODE
