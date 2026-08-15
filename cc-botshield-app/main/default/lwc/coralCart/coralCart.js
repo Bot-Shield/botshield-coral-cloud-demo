@@ -37,7 +37,7 @@ export default class CoralCart extends LightningElement {
     drawerOpen = false;
     phase = 'cart'; // cart | verify | placing | done | error
     email = '';
-    verifyState = 'loading'; // loading | ready | verified | challenge | failed
+    verifyState = 'idle'; // idle | running | verified | challenge | failed
     censusToken = null;
     verificationUrl = null;
     bookingNames = [];
@@ -132,8 +132,17 @@ export default class CoralCart extends LightningElement {
         if (!this.items.length) return;
         this.phase = 'verify';
         this.censusToken = null;
-        this.verifyState = 'loading';
-        this.iframeNonce += 1; // fresh challenge every time
+        // idle until the human CLICKS verify — the ceremony is user-initiated,
+        // mirroring the <botshield-verify> component (idle → verifying →
+        // verified). Auto-running it on step entry made "verified" appear
+        // before any intent, which read as broken.
+        this.verifyState = 'idle';
+    }
+
+    handleStartVerify() {
+        this.verifyState = 'running';
+        this.censusToken = null;
+        this.iframeNonce += 1; // fresh challenge per attempt
     }
 
     get challengeUrl() {
@@ -149,7 +158,7 @@ export default class CoralCart extends LightningElement {
         const msg = evt.data || {};
         switch (msg.type) {
             case 'botshield:ready':
-                this.verifyState = 'ready';
+                // still 'running' — the widget shows its own progress
                 break;
             case 'botshield:success':
                 // The token is NOT trusted here — it rides to Apex, which
@@ -175,7 +184,7 @@ export default class CoralCart extends LightningElement {
     }
 
     handleRetryChallenge() {
-        this.verifyState = 'loading';
+        this.verifyState = 'running';
         this.censusToken = null;
         this.iframeNonce += 1;
     }
@@ -265,8 +274,11 @@ export default class CoralCart extends LightningElement {
     get isError() {
         return this.phase === 'error';
     }
-    get verifyLoading() {
-        return this.verifyState === 'loading';
+    get verifyIdle() {
+        return this.verifyState === 'idle';
+    }
+    get verifyRunning() {
+        return this.verifyState === 'running';
     }
     get verifyVerified() {
         return this.verifyState === 'verified';
