@@ -2,11 +2,11 @@
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-/* Floating cart button */
+/* Floating cart button — top-right, Shopify-style, where BOOK NOW lived */
 .fab {
     position: fixed;
     right: 24px;
-    bottom: 96px; /* clear of the Embedded Messaging chat bubble */
+    top: 24px;
     z-index: 9000;
     width: 52px;
     height: 52px;
