@@ -6,17 +6,18 @@ import checkout from '@salesforce/apex/BotShieldCensusCheckout.checkout';
  * BotShield Census rail.
  *
  * Rail choice (deliberate): a human at their own browser clicking "checkout"
- * is Census — "Is a human here?" — verified inline via the hosted challenge
- * iframe + postMessage, exactly like demo.botshield.ai. The Agents Ask / Q
- * rail (propose → approve in the BotShield app) belongs to the AGENT chat on
- * this site, where the actor is software and the human is elsewhere. One
- * site, both rails, each on the surface it was designed for.
+ * is Census — "Is a human here?" — verified via the BotShield QR/app ceremony,
+ * exactly like demo.botshield.ai. The Agents Ask / Q rail (propose → approve
+ * in the BotShield app) belongs to the AGENT chat on this site, where the
+ * actor is software and the human is elsewhere. One site, both rails, each on
+ * the surface it was designed for.
  *
- * Integration pattern per the strategy doc's Surface-4 gotcha: an IFRAME to
- * the hosted challenge with a postMessage contract — never a third-party
- * script load, which Experience Cloud CSP/LWS blocks. The token that comes
- * back is verified SERVER-SIDE (sdk/verify-token) before any booking is
- * created; the client's word is never the gate.
+ * The gate is <c-botshield-verify> (the SDK's <botshield-verify>, ported):
+ * it renders the verify pill, the QR modal, and the component-owned
+ * "Complete Booking" button, and it learns the outcome from THE ORG — BotShield
+ * pushes the verification into BotShield_Census__c (CDC-enabled), the LWC
+ * watches that row, and Apex re-reads the same row before creating bookings.
+ * The client's word is never the gate.
  *
  * Sessions are added from experienceSchedule via a window CustomEvent —
  * sibling LWCs on an Experience page have no shared ancestor to relay
@@ -26,26 +27,31 @@ import checkout from '@salesforce/apex/BotShieldCensusCheckout.checkout';
 const CART_EVENT = 'coralcloud:addtocart';
 const STORAGE_KEY = 'coralcloud_cart_v1';
 
-// Staging Census stack — matches the org's Named Credential (wg-staging), so
-// the token the iframe mints verifies against the same environment.
-// Deployment: botshield_sfdc_coral_travel_checkout_demo (pk_test = publishable).
-const CHALLENGE_BASE = 'https://cdn-staging.botshield.ai';
+// Staging Census stack. The Console deployment
+// botshield_sfdc_coral_travel_checkout_demo is checked under Integrations →
+// Salesforce → Configure, so its terminal events are pushed into this org.
+// pk_test = publishable; the scope IS the deployment name.
+const CDN_BASE = 'https://cdn-staging.botshield.ai';
 const SITE_KEY = 'pk_test_cd43f116e06877beb94b550a997ad4fb';
+const SCOPE = 'botshield_sfdc_coral_travel_checkout_demo';
 
 export default class CoralCart extends LightningElement {
     items = [];
     drawerOpen = false;
     phase = 'cart'; // cart | verify | placing | done | error
     email = '';
-    verifyState = 'idle'; // idle | running | verified | challenge | failed
-    censusToken = null;
-    verificationUrl = null;
+    emailTouched = false;
+    // What the org will be asked about: the request_id botshield-verify minted.
+    // Never a token, never "verified=true" from the browser.
+    censusRequestId = null;
     bookingNames = [];
     errorMessage = '';
-    iframeNonce = 0;
+
+    cdnBase = CDN_BASE;
+    siteKey = SITE_KEY;
+    scope = SCOPE;
 
     _onAdd = null;
-    _onMessage = null;
 
     connectedCallback() {
         try {
@@ -55,14 +61,10 @@ export default class CoralCart extends LightningElement {
         }
         this._onAdd = (evt) => this.addItem(evt.detail);
         window.addEventListener(CART_EVENT, this._onAdd);
-
-        this._onMessage = (evt) => this.handleChallengeMessage(evt);
-        window.addEventListener('message', this._onMessage);
     }
 
     disconnectedCallback() {
         window.removeEventListener(CART_EVENT, this._onAdd);
-        window.removeEventListener('message', this._onMessage);
     }
 
     // ── cart state ────────────────────────────────────────────────────────
@@ -122,77 +124,45 @@ export default class CoralCart extends LightningElement {
 
     handleBackToCart() {
         this.phase = 'cart';
-        this.censusToken = null;
-        this.verifyState = 'loading';
+        this.censusRequestId = null;
     }
 
-    // ── checkout: Census gate ─────────────────────────────────────────────
+    // ── checkout: Census gate (delegated to <c-botshield-verify>) ─────────
 
     handleBeginCheckout() {
         if (!this.items.length) return;
         this.phase = 'verify';
-        this.censusToken = null;
-        // idle until the human CLICKS verify — the ceremony is user-initiated,
-        // mirroring the <botshield-verify> component (idle → verifying →
-        // verified). Auto-running it on step entry made "verified" appear
-        // before any intent, which read as broken.
-        this.verifyState = 'idle';
+        this.censusRequestId = null;
+        this.emailTouched = false;
     }
 
-    handleStartVerify() {
-        this.verifyState = 'running';
-        this.censusToken = null;
-        this.iframeNonce += 1; // fresh challenge per attempt
+    handleVerifySuccess(evt) {
+        // Informational only — the request_id is what rides to Apex, which
+        // re-reads the org's Census row before creating anything.
+        this.censusRequestId = (evt.detail && evt.detail.requestId) || null;
     }
 
-    get challengeUrl() {
-        const origin = encodeURIComponent(window.location.origin);
-        return (
-            `${CHALLENGE_BASE}/challenge?site_key=${SITE_KEY}&mode=session&theme=light` +
-            `&render=iframe&origin=${origin}&n=${this.iframeNonce}`
-        );
+    handleVerifyFailure() {
+        this.censusRequestId = null;
     }
 
-    handleChallengeMessage(evt) {
-        if (evt.origin !== CHALLENGE_BASE) return;
-        const msg = evt.data || {};
-        switch (msg.type) {
-            case 'botshield:ready':
-                // still 'running' — the widget shows its own progress
-                break;
-            case 'botshield:success':
-                // The token is NOT trusted here — it rides to Apex, which
-                // verifies it against BotShield before creating anything.
-                this.censusToken = msg.token;
-                this.verifyState = 'verified';
-                break;
-            case 'botshield:challenge':
-                this.verifyState = 'challenge';
-                this.verificationUrl = msg.verification_url || null;
-                break;
-            case 'botshield:failure':
-                this.verifyState = 'failed';
-                break;
-            default:
-        }
-    }
-
-    handleOpenVerification() {
-        if (this.verificationUrl) {
-            window.open(this.verificationUrl, '_blank', 'noopener');
-        }
-    }
-
-    handleRetryChallenge() {
-        this.verifyState = 'running';
-        this.censusToken = null;
-        this.iframeNonce += 1;
+    handleVerifyReset() {
+        this.censusRequestId = null;
     }
 
     // ── checkout: place bookings ──────────────────────────────────────────
 
-    async handleCompleteBooking() {
-        if (!this.censusToken || !this.emailValid) return;
+    /** Fired by botshield-verify's own "Complete Booking" button, only when
+     *  its state is resolved. We add the one thing it can't know: the email. */
+    async handleVerifyCheckout(evt) {
+        this.emailTouched = true;
+        if (!this.emailValid) {
+            const input = this.template.querySelector('.email');
+            if (input) input.focus();
+            return;
+        }
+        const requestId = (evt.detail && evt.detail.requestId) || this.censusRequestId;
+        if (!requestId) return;
         this.phase = 'placing';
         this.errorMessage = '';
         try {
@@ -201,7 +171,7 @@ export default class CoralCart extends LightningElement {
                     this.items.map((i) => ({ sessionId: i.sessionId, guests: i.guests }))
                 ),
                 email: this.email.trim(),
-                token: this.censusToken
+                requestId
             });
             if (res && res.success) {
                 this.bookingNames = res.bookingNames || [];
@@ -220,7 +190,7 @@ export default class CoralCart extends LightningElement {
 
     handleTryAgain() {
         this.phase = 'cart';
-        this.censusToken = null;
+        this.censusRequestId = null;
     }
 
     // ── display ───────────────────────────────────────────────────────────
@@ -274,23 +244,11 @@ export default class CoralCart extends LightningElement {
     get isError() {
         return this.phase === 'error';
     }
-    get verifyIdle() {
-        return this.verifyState === 'idle';
+    get emailInvalid() {
+        return this.emailTouched && !this.emailValid;
     }
-    get verifyRunning() {
-        return this.verifyState === 'running';
-    }
-    get verifyVerified() {
-        return this.verifyState === 'verified';
-    }
-    get verifyChallenge() {
-        return this.verifyState === 'challenge';
-    }
-    get verifyFailed() {
-        return this.verifyState === 'failed';
-    }
-    get completeDisabled() {
-        return !(this.censusToken && this.emailValid);
+    get emailClass() {
+        return this.emailInvalid ? 'email invalid' : 'email';
     }
     get drawerClass() {
         return this.drawerOpen ? 'drawer open' : 'drawer';

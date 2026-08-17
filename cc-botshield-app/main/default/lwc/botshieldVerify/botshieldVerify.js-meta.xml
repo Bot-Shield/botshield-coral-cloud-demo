@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>65.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>BotShield Verify (Census)</masterLabel>
+    <description>BotShield Census human-presence gate — QR/app ceremony with the result delivered through the org (BotShield_Census__c + CDC). Port of the SDK's botshield-verify component.</description>
+    <targets>
+        <target>lightningCommunity__Page</target>
+        <target>lightningCommunity__Default</target>
+        <target>lightning__RecordPage</target>
+        <target>lightning__AppPage</target>
+        <target>lightning__HomePage</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightningCommunity__Default,lightning__RecordPage,lightning__AppPage,lightning__HomePage">
+            <property name="siteKey" type="String" label="Site Key" description="Publishable pk_… key from the BotShield Console deployment"/>
+            <property name="scope" type="String" label="Scope" description="Deployment / action scope, e.g. botshield_sfdc_coral_travel_checkout_demo"/>
+            <property name="mode" type="String" label="Mode" default="private"/>
+            <property name="theme" type="String" label="Theme" default="light" description="light | dark | auto"/>
+            <property name="cdnBase" type="String" label="BotShield CDN base" default="https://cdn-staging.botshield.ai"/>
+            <property name="transport" type="String" label="Result transport" default="salesforce" description="salesforce (watch the org's Census row, pushed by BotShield) | cdn (poll BotShield directly)"/>
+            <property name="checkoutLabel" type="String" label="Checkout label" default="Checkout"/>
+            <property name="hideCheckout" type="Boolean" label="Hide checkout button" default="false"/>
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

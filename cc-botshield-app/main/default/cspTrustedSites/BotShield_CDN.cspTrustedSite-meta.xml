@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CspTrustedSite xmlns="http://soap.sforce.com/2006/04/metadata">
     <context>Communities</context>
-    <description>BotShield CDN (staging) — botshieldVerify calls /api/evaluate, /api/create-verification, /api/check-verification (connect-src) and loads the modal logo (img-src). frame-src kept for the hosted challenge.</description>
-    <endpointUrl>https://cdn-staging.botshield.ai</endpointUrl>
+    <description>BotShield CDN (production) — same endpoints as staging; switch botshieldVerify cdn-base to this for prod deployments.</description>
+    <endpointUrl>https://cdn.botshield.ai</endpointUrl>
     <isActive>true</isActive>
     <isApplicableToConnectSrc>true</isApplicableToConnectSrc>
     <isApplicableToFontSrc>false</isApplicableToFontSrc>

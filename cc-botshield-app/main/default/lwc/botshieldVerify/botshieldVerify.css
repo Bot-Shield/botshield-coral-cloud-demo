@@ -1,0 +1,395 @@
+/* Ported verbatim from botshield-sdk-embed/src/botshield-verify.ts STYLES (v3).
+   :host([theme=…][state=…]) selectors became .bs-root.theme-…/.state-… because
+   LWC components don't reflect state onto their host element. Values are the
+   SDK's — do not restyle here. */
+:host {
+  display: block;
+  width: 100%;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Trunk container — the component's top-level rows stack VERTICALLY here, so the
+   layout is robust even if the host element is set to display:flex/grid by the
+   partner page (outer-document styles override :host). The host then has a
+   single child (.bs-root), and .bs-root stacks verify / checkout / footer.
+   ONLY .bs-footer is a horizontal row. */
+.bs-root {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+}
+
+/* ---------- Default (light idle) ---------- */
+.bs-root, .bs-root.theme-light, .bs-root.theme-auto {
+  --bs-bg: #f9f9f9;
+  --bs-bg-hover: #dfdfdf;
+  --bs-border: #aaaaaa;
+  --bs-text: #000000;
+  --bs-icon-color: #147baa;
+}
+.bs-root.theme-dark {
+  --bs-bg: #0b0b0c;
+  --bs-bg-hover: #1e1e1e;
+  --bs-border: #373a41;
+  --bs-text: #cecfd2;
+  --bs-icon-color: #147baa;
+}
+@media (prefers-color-scheme: dark) {
+  .bs-root.theme-auto {
+    --bs-bg: #0b0b0c;
+    --bs-bg-hover: #1e1e1e;
+    --bs-border: #373a41;
+    --bs-text: #cecfd2;
+    --bs-icon-color: #147baa;
+  }
+}
+
+/* ---------- Verified state (light) ---------- */
+.bs-root.state-verified,
+.bs-root.theme-light.state-verified,
+.bs-root.theme-auto.state-verified {
+  --bs-bg: rgba(15, 195, 105, 0.2);
+  --bs-bg-hover: rgba(15, 195, 105, 0.2);
+  --bs-border: #0fc369;
+  --bs-text: #06ab59;
+  --bs-icon-color: #1cb86a;
+}
+.bs-root.theme-dark.state-verified {
+  --bs-bg: rgba(35, 203, 120, 0.2);
+  --bs-bg-hover: rgba(35, 203, 120, 0.2);
+  --bs-border: rgba(35, 203, 120, 0.5);
+  --bs-text: #3aeb8f;
+  --bs-icon-color: #40d78c;
+}
+@media (prefers-color-scheme: dark) {
+  .bs-root.theme-auto.state-verified {
+    --bs-bg: rgba(35, 203, 120, 0.2);
+    --bs-bg-hover: rgba(35, 203, 120, 0.2);
+    --bs-border: rgba(35, 203, 120, 0.5);
+    --bs-text: #3aeb8f;
+    --bs-icon-color: #40d78c;
+  }
+}
+
+/* ---------- MultiPass Active state (light) ---------- */
+/* Story 7.4 visual — Figma file OsQQtkzL52OOOGVnWNwDFX nodes 830:5341
+   (light) / 830:5306 (dark). Lower-saturation green tint than Story 7.3
+   (verified) plus a 1.5px tinted border — communicates "credential
+   continuity" rather than "live presence." Per App Spec line 237 every
+   MultiPass-layer surface uses the Active/Not Active vocabulary. */
+.bs-root.state-multipass_active,
+.bs-root.theme-light.state-multipass_active,
+.bs-root.theme-auto.state-multipass_active {
+  --bs-bg: rgba(15, 195, 105, 0.15);
+  --bs-bg-hover: rgba(15, 195, 105, 0.15);
+  --bs-border: rgba(15, 195, 105, 0.3);
+  --bs-text: #06ab59;
+  --bs-icon-color: #0fa675;
+}
+.bs-root.theme-dark.state-multipass_active {
+  --bs-bg: rgba(35, 203, 120, 0.2);
+  --bs-bg-hover: rgba(35, 203, 120, 0.2);
+  --bs-border: rgba(35, 203, 120, 0.3);
+  --bs-text: #3aeb8f;
+  --bs-icon-color: #40d78c;
+}
+@media (prefers-color-scheme: dark) {
+  .bs-root.theme-auto.state-multipass_active {
+    --bs-bg: rgba(35, 203, 120, 0.2);
+    --bs-bg-hover: rgba(35, 203, 120, 0.2);
+    --bs-border: rgba(35, 203, 120, 0.3);
+    --bs-text: #3aeb8f;
+    --bs-icon-color: #40d78c;
+  }
+}
+/* 1.5px border on multipass_active per Figma (other states use 1px). */
+.bs-root.state-multipass_active .bs-btn {
+  border-width: 1.5px;
+}
+
+/* ---------- Unavailable / failed state (light) ---------- */
+.bs-root.state-failed,
+.bs-root.theme-light.state-failed,
+.bs-root.theme-auto.state-failed {
+  --bs-bg: rgba(255, 59, 48, 0.2);
+  --bs-bg-hover: rgba(255, 59, 48, 0.28);
+  --bs-border: #f9291d;
+  --bs-text: #da1d12;
+  --bs-icon-color: #ff3b30;
+}
+.bs-root.theme-dark.state-failed {
+  --bs-bg: rgba(255, 59, 48, 0.2);
+  --bs-bg-hover: rgba(255, 59, 48, 0.28);
+  --bs-border: rgba(255, 59, 48, 0.5);
+  --bs-text: #ff3b30;
+  --bs-icon-color: #ff3b30;
+}
+@media (prefers-color-scheme: dark) {
+  .bs-root.theme-auto.state-failed {
+    --bs-bg: rgba(255, 59, 48, 0.2);
+    --bs-bg-hover: rgba(255, 59, 48, 0.28);
+    --bs-border: rgba(255, 59, 48, 0.5);
+    --bs-text: #ff3b30;
+    --bs-icon-color: #ff3b30;
+  }
+}
+
+/* ---------- Button ---------- */
+.bs-btn {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 10px 16px;
+  border: 1px solid var(--bs-border);
+  background: var(--bs-bg);
+  color: var(--bs-text);
+  border-radius: 10px;
+  /* Skeumorphic triplet from Figma: subtle drop + inner border + inner bottom.
+     Drop is functionally invisible (alpha 0) but kept for parity; inner shadows
+     give the pill its faint depth on light backgrounds. */
+  box-shadow:
+    0 1px 2px 0 rgba(249, 250, 251, 0),
+    inset 0 0 0 1px rgba(12, 14, 18, 0.18),
+    inset 0 -2px 0 0 rgba(12, 14, 18, 0.05);
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  letter-spacing: 0;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  user-select: none;
+  box-sizing: border-box;
+  outline: none;
+  white-space: nowrap;
+  appearance: none;
+  -webkit-appearance: none;
+}
+.bs-btn:hover {
+  background: var(--bs-bg-hover);
+}
+.bs-btn:focus-visible {
+  outline: 2px solid #147baa;
+  outline-offset: 2px;
+}
+.bs-root.state-verified .bs-btn,
+.bs-root.state-multipass_active .bs-btn,
+.bs-root.state-verifying .bs-btn {
+  cursor: default;
+}
+.bs-root.state-verified .bs-btn:hover,
+.bs-root.state-multipass_active .bs-btn:hover,
+.bs-root.state-verifying .bs-btn:hover {
+  background: var(--bs-bg);
+}
+
+.bs-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 20px;
+  height: 22px;
+  color: var(--bs-icon-color);
+  line-height: 0;
+}
+.bs-icon svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.bs-label {
+  display: inline-block;
+}
+
+.bs-spin {
+  animation: bs-rotate 0.8s linear infinite;
+}
+@keyframes bs-rotate {
+  to { transform: rotate(360deg); }
+}
+
+.bs-token-input {
+  display: none;
+}
+
+/* ---------- Checkout button (component-owned, verified-gated) ----------
+   RFC 07: the component renders the partner's checkout button and owns its
+   gating + tamper-proofing. Partner restyles (hooks below) + relabels
+   (checkout-label) + listens for botshield:checkout. Enabled ONLY when the
+   internal server-derived state is resolved; disabled state is grayed. */
+.bs-checkout-btn {
+  --bs-checkout-bg: #7f56d9;
+  --bs-checkout-color: #ffffff;
+  --bs-checkout-radius: 8px;
+  --bs-checkout-disabled-opacity: 0.3;
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px 16px;
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--bs-checkout-radius);
+  background: var(--bs-checkout-bg);
+  color: var(--bs-checkout-color);
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: opacity 0.2s ease, transform 0.1s ease;
+  box-shadow:
+    0 1px 2px 0 rgba(10, 13, 18, 0.05),
+    inset 0 -2px 0 0 rgba(10, 13, 18, 0.05),
+    inset 0 0 0 1px rgba(10, 13, 18, 0.18);
+  appearance: none;
+  -webkit-appearance: none;
+}
+.bs-checkout-btn:hover:not(:disabled) { opacity: 0.92; }
+.bs-checkout-btn:active:not(:disabled) { transform: scale(0.985); }
+.bs-checkout-btn:focus-visible { outline: 2px solid #40d78c; outline-offset: 2px; }
+.bs-checkout-btn:disabled { opacity: var(--bs-checkout-disabled-opacity); cursor: not-allowed; }
+
+/* ---------- Footer row: Census branding (left) + MultiPass CTA (right) ----------
+   Flex row, vertically centered to each other, contents centered. */
+.bs-footer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 30px;
+  margin-top: 14px;
+}
+
+/* "Powered by Census" attribution lockup — sized to the Figma footer lockup
+   ~86 x 31 (node 1498:18815/16). Wordmark themes via currentColor; check green. */
+.bs-branding {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  width: 86.16px;
+  color: var(--bs-text);
+}
+.bs-powered { font-size: 7px; font-weight: 500; letter-spacing: 0.02em; line-height: 1; opacity: 0.8; }
+.bs-census-logo { display: block; width: 86.16px; line-height: 0; }
+.bs-census-logo svg { display: block; width: 86.16px; height: auto; }
+.bs-brand-links { display: flex; align-items: center; justify-content: center; gap: 4px; font-size: 9px; font-weight: 500; line-height: 11px; }
+.bs-brand-links a { color: inherit; text-decoration: none; }
+.bs-brand-links a:hover { text-decoration: underline; }
+.bs-brand-links a:focus-visible { outline: 2px solid #40d78c; outline-offset: 1px; border-radius: 2px; }
+.bs-brand-sep { opacity: 0.6; }
+
+/* ---------- MultiPass CTA (black pill, state-driven label) ----------
+   idle → "Works with BotShield" / "MultiPass"; resolved → "Add to BotShield" /
+   "MultiPass". Override via stayverified-label. Hooks: --bs-sv-*, part. */
+.bs-stayverified-btn {
+  --bs-sv-bg: #000000;
+  --bs-sv-border: #373a41;
+  --bs-sv-border-hover: #4a4e57;
+  --bs-sv-radius: 9px;
+  --bs-sv-text-color: #ffffff;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 14px;
+  background: var(--bs-sv-bg);
+  border: 1px solid var(--bs-sv-border);
+  border-radius: var(--bs-sv-radius);
+  box-shadow:
+    0 1px 2px 0 rgba(249, 250, 251, 0),
+    inset 0 0 0 1px rgba(12, 14, 18, 0.18),
+    inset 0 -2px 0 0 rgba(12, 14, 18, 0.05);
+  cursor: default;
+  font-family: inherit;
+  user-select: none;
+  box-sizing: border-box;
+}
+/* Static branding lockup — not interactive (the functional "Add to MultiPass"
+   add-via-app flow is E1–E4, pending Product+Design). No hover/active/focus. */
+.bs-sv-icon { flex: none; display: block; line-height: 0; }
+.bs-sv-text { display: flex; flex-direction: column; align-items: flex-start; line-height: 1; text-align: left; }
+.bs-sv-top { color: var(--bs-sv-text-color); font-size: 8px; font-weight: 500; letter-spacing: 0.01em; margin-bottom: 2px; white-space: nowrap; }
+.bs-sv-wordmark { color: var(--bs-sv-text-color); font-size: 15px; font-weight: 700; letter-spacing: -0.01em; white-space: nowrap; }
+/* Single-line variant when stayverified-label overrides the canon stacked label. */
+.bs-sv-text--single { flex-direction: row; align-items: center; }
+.bs-sv-text--single .bs-sv-wordmark { font-size: 13px; }
+
+/* ---------- QR modal (SDK showQrModal styles) ---------- */
+.bs-qr-modal-overlay {
+  position: fixed; inset: 0; z-index: 99999;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(0,0,0,0.8); backdrop-filter: blur(4px);
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+.bs-qr-modal-overlay * { box-sizing: border-box; }
+.bs-modal {
+  background: #101010; border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+  overflow: hidden; display: flex; flex-direction: column; gap: 20px;
+  padding: 20px; max-width: 860px; width: calc(100% - 64px);
+  max-height: calc(100vh - 64px);
+}
+.bs-modal-body { display: flex; gap: 20px; align-items: center; }
+.bs-modal-left { flex: 1; display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+.bs-modal-logo { display: flex; align-items: center; gap: 4px; }
+.bs-modal-logo img { height: 41px; width: 38px; }
+.bs-modal-logo span { font-weight: 600; font-size: 24px; color: white; letter-spacing: -1.2px; text-transform: capitalize; }
+.bs-modal-badge {
+  display: inline-flex; align-self: flex-start; align-items: center;
+  padding: 2px 10px; border-radius: 9999px; font-size: 12px; font-weight: 500;
+  color: #6bb6da; background: rgba(20,123,170,0.1); border: 1px solid rgba(20,123,170,0.2);
+}
+.bs-modal-title { font-weight: 600; font-size: 24px; color: white; line-height: 32px; max-width: 280px; }
+.bs-modal-desc { font-size: 15px; color: #c7c7c7; line-height: 22px; }
+.bs-modal-steps { display: flex; flex-direction: column; gap: 20px; max-width: 353px; }
+.bs-modal-step { display: flex; gap: 16px; align-items: flex-start; }
+.bs-modal-step-num {
+  width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; color: white;
+  background: linear-gradient(180deg, #147BAA 0%, #0F5E82 100%);
+}
+.bs-modal-step-title { font-weight: 500; font-size: 16px; color: white; line-height: 24px; }
+.bs-modal-step-desc { font-size: 14px; color: #cecfd2; line-height: 20px; }
+.bs-modal-push-hint {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 12px 14px; border-radius: 10px;
+  background: rgba(20,123,170,0.08); border: 1px solid rgba(20,123,170,0.2);
+  font-size: 14px; color: #c7c7c7; line-height: 20px; max-width: 353px;
+}
+.bs-modal-push-dot {
+  width: 8px; height: 8px; border-radius: 50%; background: #147baa;
+  flex-shrink: 0; margin-top: 6px; animation: bs-pulse 1.5s ease-in-out infinite;
+}
+.bs-modal-right {
+  width: 400px; flex-shrink: 0; background: #0b0b0c;
+  border-left: 1px solid rgba(255,255,255,0.06); border-radius: 0 16px 16px 0;
+  display: flex; align-items: center; justify-content: center;
+  padding: 40px 20px;
+}
+.bs-modal-qr-wrap { display: flex; flex-direction: column; gap: 24px; align-items: center; }
+.bs-modal-qr-img { width: 232px; height: 232px; border-radius: 10px; }
+.bs-modal-qr-label { font-weight: 600; font-size: 14px; color: #c7c7c7; text-align: center; }
+.bs-modal-qr-sub { font-size: 12px; color: #555; text-align: center; }
+.bs-modal-status { display: flex; align-items: center; gap: 8px; }
+.bs-modal-pulse { width: 8px; height: 8px; border-radius: 50%; background: #147baa; animation: bs-pulse 1.5s ease-in-out infinite; }
+@keyframes bs-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+.bs-modal-status-text { font-size: 14px; color: #959595; }
+.bs-modal-footer { display: flex; align-items: center; justify-content: space-between; padding: 0 4px; flex-shrink: 0; }
+.bs-modal-footer-text { font-size: 12px; color: #555; text-align: center; flex: 1; min-width: 0; }
+.bs-modal-footer-text a { color: inherit; text-decoration: none; }
+.bs-modal-footer-text a:hover { color: #959595; }
+.bs-modal-cancel { font-size: 14px; color: #959595; background: none; border: none; cursor: pointer; margin-left: 16px; font-family: inherit; flex-shrink: 0; white-space: nowrap; }
+.bs-modal-cancel:hover { color: white; }
+@media (max-width: 768px) {
+  .bs-modal-body { flex-direction: column; }
+  .bs-modal-right { width: 100%; margin: 0; border-radius: 12px; border-left: none; min-height: auto; padding: 32px 0; }
+}

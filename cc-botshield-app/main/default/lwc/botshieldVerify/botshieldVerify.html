@@ -1,0 +1,99 @@
+<template>
+    <div class={rootClass} part="root">
+        <!-- (1) The verify pill — states/labels/icons are the SDK's, verbatim -->
+        <button class="bs-btn" part="container" type="button" aria-live="polite"
+                onclick={handleVerifyClick}>
+            <span class="bs-icon" lwc:dom="manual"></span>
+            <span class="bs-label">{label}</span>
+        </button>
+
+        <!-- (2) Component-owned, verified-gated checkout button (RFC 07) -->
+        <template lwc:if={showCheckout}>
+            <button class="bs-checkout-btn" part="checkout" type="button"
+                    onclick={handleCheckoutClick} disabled={checkoutDisabled}>
+                {checkoutLabel}
+            </button>
+        </template>
+
+        <!-- (3) Footer: Census attribution + MultiPass lockup (static branding) -->
+        <div class="bs-footer" part="footer">
+            <div class="bs-branding" part="branding">
+                <span class="bs-census-logo" lwc:dom="manual"></span>
+                <span class="bs-brand-links">
+                    <a href="https://botshield.ai/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy</a>
+                    <span class="bs-brand-sep" aria-hidden="true">|</span>
+                    <a href="https://botshield.ai/terms" target="_blank" rel="noopener noreferrer">Terms</a>
+                </span>
+            </div>
+            <div class="bs-stayverified-btn" part="stayverified" role="img" aria-label="Stay Verified with BotShield MultiPass">
+                <span class="bs-sv-icon" lwc:dom="manual"></span>
+                <span class="bs-sv-text">
+                    <span class="bs-sv-top">{svTop}</span>
+                    <span class="bs-sv-wordmark">MultiPass</span>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- QR modal — the SDK's #bs-qr-modal-overlay, markup + copy verbatim.
+         position:fixed inside the component; hosts must not put it under a
+         transformed ancestor (coralCart's drawer slides via `right`, not
+         transform, for exactly this reason). -->
+    <template lwc:if={modalOpen}>
+        <div class="bs-qr-modal-overlay" onclick={handleOverlayClick} role="dialog" aria-modal="true" aria-label="Verify with BotShield">
+            <div class="bs-modal" onclick={stop}>
+                <div class="bs-modal-body">
+                    <div class="bs-modal-left">
+                        <div class="bs-modal-logo">
+                            <img src={logoUrl} alt="BotShield" />
+                        </div>
+                        <div class="bs-modal-badge">Add to MultiPass</div>
+                        <div class="bs-modal-title">{modalTitle}</div>
+                        <div class="bs-modal-desc"><strong>{partnerDisplay}</strong> is asking BotShield to confirm you're human. BotShield never shares your identity — only a signal that you passed.</div>
+                        <template lwc:if={showPushHint}>
+                            <div class="bs-modal-push-hint">
+                                <span class="bs-modal-push-dot"></span>
+                                <span>We sent a prompt to your phone. Approve it there — or scan the code if it didn't arrive.</span>
+                            </div>
+                        </template>
+                        <div class="bs-modal-steps">
+                            <div class="bs-modal-step">
+                                <div class="bs-modal-step-num">1</div>
+                                <div><div class="bs-modal-step-title">Scan the QR code</div><div class="bs-modal-step-desc">Use your phone's camera to open the BotShield app</div></div>
+                            </div>
+                            <div class="bs-modal-step">
+                                <div class="bs-modal-step-num">2</div>
+                                <div><div class="bs-modal-step-title">Confirm with Face ID</div><div class="bs-modal-step-desc">One biometric check ties this site to your MultiPass</div></div>
+                            </div>
+                            <div class="bs-modal-step">
+                                <div class="bs-modal-step-num">3</div>
+                                <div><div class="bs-modal-step-title">Skip the QR next time</div><div class="bs-modal-step-desc">Future visits push a prompt straight to your phone</div></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bs-modal-right">
+                        <div class="bs-modal-qr-wrap">
+                            <img class="bs-modal-qr-img" src={qrUrl} alt="Scan QR code" />
+                            <div>
+                                <div class="bs-modal-qr-label">Scan to verify with BotShield</div>
+                                <div class="bs-modal-qr-sub">Available on iOS and Android</div>
+                            </div>
+                            <div class="bs-modal-status">
+                                <div class="bs-modal-pulse"></div>
+                                <span class="bs-modal-status-text">Waiting for verification...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bs-modal-footer">
+                    <div class="bs-modal-footer-text">
+                        Powered by BotShield &bull; No data collected &bull;
+                        <a href="https://botshield.ai/privacy" target="_blank" rel="noopener noreferrer">Privacy</a> &bull;
+                        <a href="https://botshield.ai/terms" target="_blank" rel="noopener noreferrer">Terms</a>
+                    </div>
+                    <button class="bs-modal-cancel" type="button" onclick={handleCancel}>Cancel</button>
+                </div>
+            </div>
+        </div>
+    </template>
+</template>

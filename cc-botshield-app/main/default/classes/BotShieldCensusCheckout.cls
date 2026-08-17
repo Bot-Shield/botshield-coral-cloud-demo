@@ -3,23 +3,29 @@
  * Cloud site.
  *
  * Rail choice: a human present at their own browser is the CENSUS question
- * ("Is a human here?") — verified inline at checkout via the hosted challenge,
- * mirrored after demo.botshield.ai. The Agents Ask / Q rail stays with the
- * agent chat on this site, where the actor is software.
+ * ("Is a human here?") — verified at checkout via the BotShield QR/app
+ * ceremony (the same <botshield-verify> flow demo.botshield.ai runs). The
+ * Agents Ask / Q rail stays with the agent chat on this site, where the actor
+ * is software.
  *
- * The Personhood Firewall rule from the strategy doc applies verbatim: the
- * client's word is never the gate. The browser hands us an attestation token;
- * THIS class verifies it against BotShield (sdk/verify-token — no API key,
- * the token is the proof) before a single booking row is created. An invalid
- * or missing token creates nothing.
+ * ── The Salesforce-native gate ────────────────────────────────────────────
+ * The browser never tells us it is verified. The verification happens in the
+ * BotShield app; BotShield's Console then writes the outcome INTO THIS ORG as
+ * a BotShield_Census__c row (upsert on Request_ID__c, via the External Client
+ * App's client-credentials session — the only writer that can). Change Data
+ * Capture is enabled on the object so in-org subscribers react to the row
+ * landing. The browser only ever knows the request_id it minted:
  *
- * Bookings are created ACTIVE here (unlike the Q-rail controller's pending
- * flip) because the human just verified, present-tense, at this checkout —
- * there is no later approval to wait for.
+ *   getVerificationStatus(requestId)  → reads the row (the LWC watches this)
+ *   checkout(items, email, requestId) → gates on the row being Completed
+ *
+ * The client's word is never the gate; the org's own audit row is. Bookings
+ * are created ACTIVE because the human just verified, present-tense.
  */
 public without sharing class BotShieldCensusCheckout {
 
-    private static final Integer CALLOUT_TIMEOUT_MS = 30000;
+    /** A verification older than this is not "present-tense" any more. */
+    private static final Integer MAX_VERIFICATION_AGE_MINUTES = 30;
 
     public class CheckoutItem {
         public String sessionId;
@@ -32,8 +38,44 @@ public without sharing class BotShieldCensusCheckout {
         @AuraEnabled public String errorMessage;
     }
 
+    /** What the LWC polls. `found` false = the push hasn't landed yet. */
+    public class VerificationStatus {
+        @AuraEnabled public Boolean found = false;
+        @AuraEnabled public String status;       // Completed | Failed | Blocked | Expired
+        @AuraEnabled public String resultState;  // Human Verified | MultiPass Active | Unavailable
+        @AuraEnabled public Boolean verified = false;
+        @AuraEnabled public Datetime verifiedAt;
+        @AuraEnabled public String token;        // attestation token, if pushed
+    }
+
+    /**
+     * Read the BotShield_Census__c row for a request_id. Cheap SOQL, no
+     * callout — the row exists only if BotShield pushed it. Called on a short
+     * interval by botshieldVerify (transport="salesforce") until terminal.
+     */
     @AuraEnabled
-    public static CheckoutResult checkout(String itemsJson, String email, String token) {
+    public static VerificationStatus getVerificationStatus(String requestId) {
+        VerificationStatus vs = new VerificationStatus();
+        if (String.isBlank(requestId)) { return vs; }
+        List<BotShield_Census__c> rows = [
+            SELECT Status__c, Result_State__c, Verified__c, Verified_At__c, Attestation_Token__c
+            FROM BotShield_Census__c
+            WHERE Request_ID__c = :requestId
+            LIMIT 1
+        ];
+        if (rows.isEmpty()) { return vs; }
+        BotShield_Census__c r = rows[0];
+        vs.found = true;
+        vs.status = r.Status__c;
+        vs.resultState = r.Result_State__c;
+        vs.verified = r.Verified__c == true || r.Status__c == 'Completed';
+        vs.verifiedAt = r.Verified_At__c;
+        vs.token = r.Attestation_Token__c;
+        return vs;
+    }
+
+    @AuraEnabled
+    public static CheckoutResult checkout(String itemsJson, String email, String requestId) {
         CheckoutResult out = new CheckoutResult();
         try {
             // ── Parse + validate input ────────────────────────────────────
@@ -53,14 +95,12 @@ public without sharing class BotShieldCensusCheckout {
                 return out;
             }
 
-            // ── The gate: verify the Census token server-side ─────────────
-            // Callout BEFORE any DML (Apex rule), which also means an invalid
-            // token exits before anything exists to roll back.
-            if (String.isBlank(token) || !verifyToken(token)) {
-                out.errorMessage = 'Human verification failed. Please verify and try again.';
+            // ── The gate: the org's own Census row must say Completed ─────
+            BotShield_Census__c census = gateRow(requestId);
+            if (census == null) {
+                out.errorMessage = 'Human verification not confirmed. Please verify and try again.';
                 return out;
             }
-
             // ── Load sessions + capacity check ────────────────────────────
             Set<Id> sessionIds = new Set<Id>();
             for (CheckoutItem it : items) {
@@ -104,6 +144,9 @@ public without sharing class BotShieldCensusCheckout {
             for (Booking__c b : [SELECT Name FROM Booking__c WHERE Id IN :bookings]) {
                 out.bookingNames.add(b.Name);
             }
+            // Tie the audit row to what it gated (in-org only field).
+            census.Source_Record_ID__c = String.join(out.bookingNames, ',').abbreviate(255);
+            update census;
             out.success = true;
             return out;
         } catch (Exception e) {
@@ -113,42 +156,26 @@ public without sharing class BotShieldCensusCheckout {
     }
 
     /**
-     * POST sdk/verify-token. WG single-wraps success as { data: { valid } }
-     * and reports failures as HTTP 200 with an error body — parse the
-     * envelope, never trust the HTTP status (the standing WG lesson).
+     * The gate row: Completed, and recent enough to count as present-tense.
+     * Returns null when the gate is closed. Reads only — the row was written
+     * by BotShield's authenticated push; nothing here trusts the browser.
      */
-    @TestVisible
-    private static Boolean verifyToken(String token) {
-        HttpRequest req = new HttpRequest();
-        req.setEndpoint('callout:' + BotShieldConfig.NAMED_CREDENTIAL
-            + BotShieldConfig.OPERATIONS_BASE + '/sdk/verify-token');
-        req.setMethod('POST');
-        req.setHeader('Content-Type', 'application/json');
-        req.setTimeout(CALLOUT_TIMEOUT_MS);
-        req.setBody(JSON.serialize(new Map<String, Object>{ 'token' => token }));
-
-        try {
-            HttpResponse res = new Http().send(req);
-            Object parsed = JSON.deserializeUntyped(res.getBody());
-            if (!(parsed instanceof Map<String, Object>)) { return false; }
-            Map<String, Object> body = (Map<String, Object>) parsed;
-
-            Object dataObj = body.get('data');
-            Map<String, Object> payload = (dataObj instanceof Map<String, Object>)
-                ? (Map<String, Object>) dataObj
-                : body;
-            // Peel one nested data, defensively.
-            Object nested = payload.get('data');
-            if (nested instanceof Map<String, Object>) {
-                payload = (Map<String, Object>) nested;
-            }
-
-            Object valid = payload.get('valid');
-            return valid instanceof Boolean && (Boolean) valid;
-        } catch (Exception e) {
-            // Unreachable verifier = closed gate. Never fail open.
-            return false;
+    private static BotShield_Census__c gateRow(String requestId) {
+        if (String.isBlank(requestId)) { return null; }
+        List<BotShield_Census__c> rows = [
+            SELECT Id, Status__c, Verified__c, Verified_At__c, Source_Record_ID__c
+            FROM BotShield_Census__c
+            WHERE Request_ID__c = :requestId
+            LIMIT 1
+        ];
+        if (rows.isEmpty()) { return null; }
+        BotShield_Census__c r = rows[0];
+        if (r.Status__c != 'Completed') { return null; }
+        if (r.Verified_At__c != null
+            && r.Verified_At__c < Datetime.now().addMinutes(-MAX_VERIFICATION_AGE_MINUTES)) {
+            return null;
         }
+        return r;
     }
 
     private static Id findOrCreateContact(String email) {

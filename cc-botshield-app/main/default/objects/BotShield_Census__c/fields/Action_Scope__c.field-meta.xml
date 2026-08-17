@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Action_Scope__c</fullName>
+    <label>Action Scope</label>
+    <type>Text</type>
+    <length>255</length>
+    <description>The scope the verification gated, e.g. ticket_purchase.</description>
+</CustomField>

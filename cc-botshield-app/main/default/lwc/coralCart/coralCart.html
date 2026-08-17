@@ -82,58 +82,33 @@
                     onchange={handleEmailChange}
                     oninput={handleEmailChange}
                     placeholder="you@example.com"
-                    class="email"
+                    class={emailClass}
+                    aria-invalid={emailInvalid}
                 />
+                <p lwc:if={emailInvalid} class="field-error">Enter a valid email to complete the booking.</p>
             </div>
 
             <footer class="drawer-foot">
                 <div class="total-row"><span>Total</span><strong>{totalLabel}</strong></div>
 
-                <!-- The gate, adjacent to the button it gates — user-initiated,
-                     mirroring the <botshield-verify> component states. -->
-                <button lwc:if={verifyIdle} type="button" class="verify-btn" onclick={handleStartVerify}>
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="12" cy="7" r="4"></circle>
-                    </svg>
-                    Verify human with BotShield
-                </button>
-
-                <div lwc:if={verifyRunning} class="verify-slot">
-                    <!-- Census hosted challenge — mounts ONLY after the click. The
-                         passkey ceremony needs the publickey-credentials permissions. -->
-                    <iframe
-                        src={challengeUrl}
-                        title="BotShield human verification"
-                        class="challenge"
-                        allow="publickey-credentials-get *; publickey-credentials-create *"
-                    ></iframe>
-                </div>
-
-                <div lwc:if={verifyVerified} class="verified-pill">
-                    <span class="verified-check">✓</span>
-                    Human presence verified
-                </div>
-
-                <p lwc:if={verifyChallenge} class="muted tiny">
-                    An extra verification step is needed.
-                    <button type="button" class="linklike" onclick={handleOpenVerification}>Complete verification</button>
-                    then
-                    <button type="button" class="linklike" onclick={handleRetryChallenge}>re-check</button>.
-                </p>
-                <p lwc:if={verifyFailed} class="muted tiny">
-                    Verification didn’t complete.
-                    <button type="button" class="linklike" onclick={handleRetryChallenge}>Try again</button>
-                </p>
-
-                <button type="button" class="primary" onclick={handleCompleteBooking} disabled={completeDisabled}>
-                    Complete Booking
-                </button>
-
-                <div class="attribution">
-                    <span><strong>Census</strong> <span class="muted">Privacy · Terms</span></span>
-                    <span class="multipass-chip">Stay Verified with BotShield <strong>MultiPass</strong></span>
-                </div>
+                <!-- The gate — the SDK's <botshield-verify>, ported. Renders the
+                     verify pill, the QR modal, the component-owned "Complete
+                     Booking" button and the Census / MultiPass footer. Result
+                     transport = the org (BotShield_Census__c row, CDC). -->
+                <c-botshield-verify
+                    site-key={siteKey}
+                    scope={scope}
+                    mode="private"
+                    theme="light"
+                    cdn-base={cdnBase}
+                    transport="salesforce"
+                    checkout-label="Complete Booking"
+                    partner-name="Coral Cloud Resorts"
+                    onverifysuccess={handleVerifySuccess}
+                    onverifyfailure={handleVerifyFailure}
+                    onverifyreset={handleVerifyReset}
+                    onverifycheckout={handleVerifyCheckout}
+                ></c-botshield-verify>
             </footer>
         </template>
 

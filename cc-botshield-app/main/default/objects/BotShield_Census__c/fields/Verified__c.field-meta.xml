@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Verified__c</fullName>
+    <label>Verified</label>
+    <type>Checkbox</type>
+    <defaultValue>false</defaultValue>
+    <description>True when Status = Completed. Denormalized so Flows and reports can filter without a picklist compare.</description>
+</CustomField>
