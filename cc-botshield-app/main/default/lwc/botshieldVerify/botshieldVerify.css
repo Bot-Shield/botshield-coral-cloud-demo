@@ -340,6 +340,7 @@
 .bs-modal-body { display: flex; gap: 20px; align-items: center; }
 .bs-modal-left { flex: 1; display: flex; flex-direction: column; gap: 20px; min-width: 0; }
 .bs-modal-logo { display: flex; align-items: center; gap: 4px; }
+.bs-modal-stack { display: flex; flex-direction: column; gap: 16px; }
 .bs-modal-logo img { height: 41px; width: 38px; }
 .bs-modal-logo span { font-weight: 600; font-size: 24px; color: white; letter-spacing: -1.2px; text-transform: capitalize; }
 .bs-modal-badge {

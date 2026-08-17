@@ -26,6 +26,12 @@ import checkout from '@salesforce/apex/BotShieldCensusCheckout.checkout';
 
 const CART_EVENT = 'coralcloud:addtocart';
 const STORAGE_KEY = 'coralcloud_cart_v1';
+// Opaque partner_user_ref for the MultiPass instant path (mirrors the Ticketz
+// demo). A real partner sends its own logged-in user id; this guest site mints
+// a random stand-in once and keeps it in localStorage: the FIRST verification
+// links it to the BotShield identity (link_on_verify), so later evaluates with
+// the same ref return the instant pass — no QR. Zero PII: random hex only.
+const USER_REF_KEY = 'coralcloud_bs_user_ref';
 
 // Staging Census stack. The Console deployment
 // botshield_sfdc_coral_travel_checkout_demo is checked under Integrations →
@@ -50,6 +56,7 @@ export default class CoralCart extends LightningElement {
     cdnBase = CDN_BASE;
     siteKey = SITE_KEY;
     scope = SCOPE;
+    userRef = '';
 
     _onAdd = null;
 
@@ -61,6 +68,21 @@ export default class CoralCart extends LightningElement {
         }
         this._onAdd = (evt) => this.addItem(evt.detail);
         window.addEventListener(CART_EVENT, this._onAdd);
+        this.userRef = this.loadOrMintUserRef();
+    }
+
+    loadOrMintUserRef() {
+        try {
+            const existing = window.localStorage.getItem(USER_REF_KEY);
+            if (existing) return existing;
+            const bytes = new Uint8Array(6);
+            window.crypto.getRandomValues(bytes);
+            const ref = 'cc_' + Array.from(bytes).map((b) => b.toString(16).padStart(2, '0')).join('');
+            window.localStorage.setItem(USER_REF_KEY, ref);
+            return ref;
+        } catch (e) {
+            return '';
+        }
     }
 
     disconnectedCallback() {
