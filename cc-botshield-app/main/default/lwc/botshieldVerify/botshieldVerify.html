@@ -13,6 +13,12 @@
                     onclick={handleCheckoutClick} disabled={checkoutDisabled}>
                 {checkoutLabel}
             </button>
+            <template lwc:if={showConfirming}>
+                <div class="bs-confirming" role="status">
+                    <span class="bs-modal-pulse"></span>
+                    <span>Recording your verification in Salesforce…</span>
+                </div>
+            </template>
         </template>
 
         <!-- (3) Footer: Census attribution + MultiPass lockup (static branding) -->

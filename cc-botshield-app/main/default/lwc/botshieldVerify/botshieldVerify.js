@@ -74,6 +74,13 @@ export default class BotshieldVerify extends LightningElement {
     modalOpen = false;
     qrUrl = '';
     pushedToDevices = 0;
+    // transport="salesforce": the org row is the gate, so a resolved pill only
+    // unlocks checkout once the row is confirmed. Ceremony path: the pill flips
+    // BECAUSE the row exists (confirmed by construction). MultiPass instant
+    // path (evaluate verdict=pass): the pill goes green at once (SDK parity)
+    // while the Console push lands the row a beat later — confirm it first.
+    orgConfirmed = false;
+    confirming = false;
 
     _pollTimer = null;
     _capTimer = null;
@@ -90,6 +97,8 @@ export default class BotshieldVerify extends LightningElement {
         this.state = 'idle';
         this.token = null;
         this.requestId = null;
+        this.orgConfirmed = false;
+        this.confirming = false;
         this._iconsDirty = true;
         this.dispatchEvent(new CustomEvent('verifyreset', { bubbles: true, composed: true }));
     }
@@ -101,7 +110,11 @@ export default class BotshieldVerify extends LightningElement {
     get label() { return STATE_LABEL[this.state]; }
     get isResolved() { return this.state === 'verified' || this.state === 'multipass_active'; }
     get buttonDisabled() { return this.state === 'verifying'; }
-    get checkoutDisabled() { return !this.isResolved; }
+    get checkoutDisabled() {
+        if (!this.isResolved) return true;
+        return this.transport === 'salesforce' && !this.orgConfirmed;
+    }
+    get showConfirming() { return this.confirming; }
     get showCheckout() { return !this.hideCheckout; }
     get svTop() { return this.isResolved ? 'Add to BotShield' : 'Stay Verified with BotShield'; }
     get modalTitle() { return this.pushedToDevices > 0 ? 'Check your phone' : 'Add this site to your MultiPass'; }
@@ -169,6 +182,15 @@ export default class BotshieldVerify extends LightningElement {
             this.state = rs === 'multipass_active' || result.reason === 'multipass_active' ? 'multipass_active' : 'verified';
             this.requestId = result.request_id || result.event_id || null;
             this.emitSuccess({ via: 'multipass', reason: result.reason });
+            if (this.transport === 'salesforce') {
+                // BotShield pushes a Census row for evaluate-pass outcomes keyed
+                // by this request_id; watch for it before unlocking checkout.
+                this.orgConfirmed = false;
+                this.confirming = true;
+                this.startWatching();
+            } else {
+                this.orgConfirmed = true;
+            }
             return 'done';
         }
         if (verdict === 'blocked') {
@@ -239,13 +261,25 @@ export default class BotshieldVerify extends LightningElement {
 
     /** transport="salesforce": has BotShield's push landed the row yet? */
     async pollOrg() {
-        if (this.state !== 'verifying' || !this.requestId) return;
+        if (!this.requestId) return;
+        if (this.state !== 'verifying' && !this.confirming) return;
         try {
             const vs = await getVerificationStatus({ requestId: this.requestId });
             if (!vs || !vs.found) return;
             if (vs.status === 'Completed') {
-                this.token = vs.token || null;
-                this.finish(vs.resultState === 'MultiPass Active' ? 'multipass_active' : 'verified', null, 'salesforce');
+                this.token = vs.token || this.token || null;
+                if (this.confirming) {
+                    // Instant path: pill already resolved; the row just unlocked checkout.
+                    this.stopWatching();
+                    this.confirming = false;
+                    this.orgConfirmed = true;
+                    this.dispatchEvent(new CustomEvent('verifyconfirmed', {
+                        bubbles: true, composed: true,
+                        detail: { requestId: this.requestId, token: this.token, state: this.state }
+                    }));
+                } else {
+                    this.finish(vs.resultState === 'MultiPass Active' ? 'multipass_active' : 'verified', null, 'salesforce');
+                }
             } else if (vs.status === 'Failed' || vs.status === 'Blocked' || vs.status === 'Expired') {
                 this.finish('failed', String(vs.status).toLowerCase());
             }
@@ -274,9 +308,16 @@ export default class BotshieldVerify extends LightningElement {
     finish(state, reason, via) {
         this.stopWatching();
         this.modalOpen = false;
+        this.confirming = false;
         this.state = state;
-        if (state === 'failed') this.emitFailure(reason || 'failed');
-        else this.emitSuccess({ via: via || 'salesforce', reason: null });
+        if (state === 'failed') {
+            this.orgConfirmed = false;
+            this.emitFailure(reason || 'failed');
+        } else {
+            // Ceremony path: resolved BECAUSE the org row (or CDN status) says so.
+            this.orgConfirmed = true;
+            this.emitSuccess({ via: via || 'salesforce', reason: null });
+        }
     }
 
     handleCancel() {

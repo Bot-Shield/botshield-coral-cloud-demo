@@ -188,13 +188,21 @@ export default class CoralCart extends LightningElement {
         this.phase = 'placing';
         this.errorMessage = '';
         try {
-            const res = await checkout({
-                itemsJson: JSON.stringify(
-                    this.items.map((i) => ({ sessionId: i.sessionId, guests: i.guests }))
-                ),
-                email: this.email.trim(),
-                requestId
-            });
+            const itemsJson = JSON.stringify(
+                this.items.map((i) => ({ sessionId: i.sessionId, guests: i.guests }))
+            );
+            let res = await checkout({ itemsJson, email: this.email.trim(), requestId });
+            // The org row is written by BotShield's push a beat after the widget
+            // resolves; if Apex says "not confirmed", give the push a few seconds
+            // before calling it a failure.
+            let tries = 0;
+            while (res && !res.success && /not confirmed/i.test(res.errorMessage || '') && tries < 6) {
+                tries += 1;
+                // eslint-disable-next-line no-await-in-loop
+                await new Promise((r) => setTimeout(r, 2000));
+                // eslint-disable-next-line no-await-in-loop
+                res = await checkout({ itemsJson, email: this.email.trim(), requestId });
+            }
             if (res && res.success) {
                 this.bookingNames = res.bookingNames || [];
                 this.items = [];

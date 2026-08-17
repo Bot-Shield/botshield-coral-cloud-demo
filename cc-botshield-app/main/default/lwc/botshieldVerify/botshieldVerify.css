@@ -394,3 +394,8 @@
   .bs-modal-body { flex-direction: column; }
   .bs-modal-right { width: 100%; margin: 0; border-radius: 12px; border-left: none; min-height: auto; padding: 32px 0; }
 }
+
+/* Instant-path confirm hint (Salesforce transport only): shown between the
+   pill resolving via MultiPass and the org row landing. */
+.bs-confirming { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 8px; font-size: 12px; color: #8f979e; }
+.bs-confirming .bs-modal-pulse { margin: 0; }
