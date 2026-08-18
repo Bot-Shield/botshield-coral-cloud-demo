@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GenAiPlugin xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <canEscalate>false</canEscalate>
+    <description>Used to securely validate guest bookings through BotShield human-presence verification before finalizing any reservations.</description>
+    <developerName>p_16jbm000002Bdkr_Booking_Confirmation_Process</developerName>
+    <genAiFunctions>
+        <functionName>BotShield_Require_Confirmation</functionName>
+    </genAiFunctions>
+    <genAiFunctions>
+        <functionName>BotShield_Check_Confirmation</functionName>
+    </genAiFunctions>
+    <genAiPluginInstructions>
+        <description>When the user asks to book or finalize a reservation and has given the booking details and a confirmer email, DO NOT ask whether to proceed and DO NOT ask for any verbal yes/confirm — immediately invoke the BotShield_Require_Confirmation action. Fill its inputs EXACTLY like this: (1) actionSummary = a SHORT one-line title ONLY, e.g. &quot;Book Sunset Villa for Jane Doe&quot; — do NOT list the facts and do NOT put the price here. (2) confirmerEmail = the confirmer email. (3) actionCategory = &quot;ticket_purchase&quot;. (4) When there is a price, detailLabel = &quot;TOTAL&quot; and detailValue = the formatted total, e.g. &quot;$2,400&quot;. (5) detailsJson = a JSON array (as a string) of EVERY non-money booking fact — ALWAYS populate this. Example: [{&quot;title&quot;:&quot;GUEST&quot;,&quot;value&quot;:&quot;Jane Doe&quot;},{&quot;title&quot;:&quot;ROOM&quot;,&quot;value&quot;:&quot;Sunset Villa&quot;},{&quot;title&quot;:&quot;CHECK-IN&quot;,&quot;value&quot;:&quot;July 26, 2026&quot;},{&quot;title&quot;:&quot;NIGHTS&quot;,&quot;value&quot;:&quot;3&quot;}]. NEVER put the total or any money amount in detailsJson or actionSummary, and the total must NOT also appear as a line item inside detailsJson — it goes ONLY in detailLabel/detailValue. Full correct example for &quot;Book Sunset Villa, 3 nights, $2,400 for Jane Doe&quot;: actionSummary=&quot;Book Sunset Villa for Jane Doe&quot;; detailLabel=&quot;TOTAL&quot;; detailValue=&quot;$2,400&quot;; detailsJson=[{&quot;title&quot;:&quot;GUEST&quot;,&quot;value&quot;:&quot;Jane Doe&quot;},{&quot;title&quot;:&quot;ROOM&quot;,&quot;value&quot;:&quot;Sunset Villa&quot;},{&quot;title&quot;:&quot;CHECK-IN&quot;,&quot;value&quot;:&quot;July 26, 2026&quot;},{&quot;title&quot;:&quot;NIGHTS&quot;,&quot;value&quot;:&quot;3&quot;}] — note $2,400 appears ONLY in detailValue and is NOT repeated anywhere in detailsJson. The booking request itself is your signal to act — invoking this action IS how the human approves, so never reply &quot;should I proceed?&quot;. After invoking it, tell the user their BotShield confirmation was sent and give them the requestId.</description>
+        <developerName>instruction_0</developerName>
+        <language xsi:nil="true"/>
+        <masterLabel>instruction_0</masterLabel>
+        <sortOrder>0</sortOrder>
+    </genAiPluginInstructions>
+    <genAiPluginInstructions>
+        <description>Determine whether the human approved ONLY by calling BotShield_Check_Confirmation with the requestId and reading its confirmed field. The user SAYING they approved -- &quot;done&quot;, &quot;approved&quot;, &quot;I approved it&quot;, &quot;go ahead&quot; -- is NOT proof and must NEVER be treated as confirmation. If the user claims they approved, call BotShield_Check_Confirmation to verify; never take their word. While confirmed is false / status is &quot;pending&quot;, tell the user it is still awaiting their BotShield approval and check again when they indicate they have responded. Do not loop endlessly on your own.</description>
+        <developerName>instruction_1</developerName>
+        <language xsi:nil="true"/>
+        <masterLabel>instruction_1</masterLabel>
+        <sortOrder>0</sortOrder>
+    </genAiPluginInstructions>
+    <genAiPluginInstructions>
+        <description>Booking can ONLY be finalized through BotShield. There is no other finalize tool available to you. ONLY after BotShield_Check_Confirmation returns confirmed=true may you tell the user the booking is confirmed and complete. If the status is denied, expired, cancelled, or error, do NOT confirm the booking — explain that without a confirmed BotShield human presence the booking cannot be completed (silence is not consent). Never claim a booking is done unless confirmed=true came back from BotShield_Check_Confirmation.</description>
+        <developerName>instruction_2</developerName>
+        <language xsi:nil="true"/>
+        <masterLabel>instruction_2</masterLabel>
+        <sortOrder>0</sortOrder>
+    </genAiPluginInstructions>
+    <language>en_US</language>
+    <localDeveloperName>p_16jbm000002Bdkr_Booking_Confirmation_Process</localDeveloperName>
+    <masterLabel>Booking Confirmation Process</masterLabel>
+    <pluginType>Topic</pluginType>
+    <scope>Your job is to only handle tasks related to verifying and finalizing guest bookings using BotShield. This includes initiating verification, ensuring human confirmation, and completing the reservation process. You cannot bypass or override the verification process.</scope>
+</GenAiPlugin>

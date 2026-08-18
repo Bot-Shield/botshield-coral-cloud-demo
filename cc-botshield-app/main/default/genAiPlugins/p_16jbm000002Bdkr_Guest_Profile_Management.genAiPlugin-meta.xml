@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GenAiPlugin xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <canEscalate>false</canEscalate>
+    <description>Used to manage and personalize guest profiles for better resort stay recommendations based on their preferences and data.</description>
+    <developerName>p_16jbm000002Bdkr_Guest_Profile_Management</developerName>
+    <genAiFunctions>
+        <functionName>SvcCopilotTmpl__UpdateCustomerContact</functionName>
+    </genAiFunctions>
+    <genAiFunctions>
+        <functionName>Personalization__PersonalizeContext</functionName>
+    </genAiFunctions>
+    <genAiFunctions>
+        <functionName>EmployeeCopilot__AnswerQuestionsWithKnowledge</functionName>
+    </genAiFunctions>
+    <genAiPluginInstructions>
+        <description>If a guest requests to update their contact information, use SvcCopilotTmpl__UpdateCustomerContact to update the relevant fields.</description>
+        <developerName>instruction_0</developerName>
+        <language xsi:nil="true"/>
+        <masterLabel>instruction_0</masterLabel>
+        <sortOrder>0</sortOrder>
+    </genAiPluginInstructions>
+    <genAiPluginInstructions>
+        <description>If a guest requests personalized stay recommendations, use Personalization__PersonalizeContext to provide tailored suggestions.</description>
+        <developerName>instruction_1</developerName>
+        <language xsi:nil="true"/>
+        <masterLabel>instruction_1</masterLabel>
+        <sortOrder>0</sortOrder>
+    </genAiPluginInstructions>
+    <language>en_US</language>
+    <localDeveloperName>p_16jbm000002Bdkr_Guest_Profile_Management</localDeveloperName>
+    <masterLabel>Guest Profile Management</masterLabel>
+    <pluginType>Topic</pluginType>
+    <scope>Your job is to only update guest contact details and personalize recommendations using guest profile information. You cannot handle booking confirmations or availability inquiries.</scope>
+</GenAiPlugin>

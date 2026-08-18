@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<PlatformEventChannelMember xmlns="http://soap.sforce.com/2006/04/metadata">
-    <!-- Enables Change Data Capture on BotShield_Census__c so in-org subscribers
-         (Flows, Apex change-event triggers, empApi LWCs in Lightning Experience)
-         react the moment the Console push lands a verification row.
-         Channel: /data/BotShield_Census__ChangeEvent -->
-    <eventChannel>ChangeEvents</eventChannel>
-    <selectedEntity>BotShield_Census__ChangeEvent</selectedEntity>
-</PlatformEventChannelMember>

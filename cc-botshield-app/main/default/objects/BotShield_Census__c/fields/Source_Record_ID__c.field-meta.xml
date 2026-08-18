@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fullName>Source_Record_ID__c</fullName>
-    <label>Source Record ID</label>
-    <type>Text</type>
-    <length>255</length>
-    <description>In-org only: what the verification gated (e.g. Booking, Order, Case). Set by the consuming Apex, not by the push.</description>
-</CustomField>

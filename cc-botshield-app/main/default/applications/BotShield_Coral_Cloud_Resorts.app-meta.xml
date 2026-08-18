@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomApplication xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>BotShield Coral Cloud Resorts</label>
+    <description>Coral Cloud Resorts demo app — an Agentforce booking concierge that gates sensitive actions behind BotShield human-presence verification (in place of email OTP).</description>
+    <navType>Standard</navType>
+    <uiType>Lightning</uiType>
+    <formFactors>Large</formFactors>
+    <isNavAutoTempTabsDisabled>false</isNavAutoTempTabsDisabled>
+    <tabs>standard-home</tabs>
+    <tabs>BotShield_Resolution__c</tabs>
+    <tabs>BotShield_Link_Page</tabs>
+    <tabs>BotShield_Link__c</tabs>
+</CustomApplication>

@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fullName>Site_Key__c</fullName>
-    <label>Site Key</label>
-    <type>Text</type>
-    <length>255</length>
-    <description>Publishable pk_… site key the verification was created under.</description>
-</CustomField>

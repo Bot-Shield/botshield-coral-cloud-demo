@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fullName>Attestation_Token__c</fullName>
-    <label>Attestation Token</label>
-    <type>LongTextArea</type>
-    <length>32768</length>
-    <visibleLines>3</visibleLines>
-    <description>The receipt JWT for the verification. Re-verifiable via sdk/verify-token; never contains PII.</description>
-</CustomField>
