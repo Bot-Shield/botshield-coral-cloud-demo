@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <name>Propose_To_BotShield</name>
+        <label>BotShield: Require Human Confirmation</label>
+        <locationX>50</locationX>
+        <locationY>360</locationY>
+        <actionName>BotShieldResolve</actionName>
+        <actionType>apex</actionType>
+        <connector><targetReference>Proposed_OK</targetReference></connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>actionSummary</name>
+            <value><elementReference>summaryText</elementReference></value>
+        </inputParameters>
+        <inputParameters><name>actionCategory</name><value><elementReference>actionCategory</elementReference></value></inputParameters>
+        <inputParameters>
+            <name>confirmerEmail</name>
+            <value><elementReference>confirmerEmail</elementReference></value>
+        </inputParameters>
+        <inputParameters>
+            <name>sourceRecordId</name>
+            <value><elementReference>bookingId</elementReference></value>
+        </inputParameters>
+        <inputParameters>
+            <name>detailLabel</name>
+            <value><stringValue>Refund</stringValue></value>
+        </inputParameters>
+        <inputParameters>
+            <name>detailValue</name>
+            <value><elementReference>refundText</elementReference></value>
+        </inputParameters>
+        <inputParameters>
+            <name>ttlSeconds</name>
+            <value><numberValue>600.0</numberValue></value>
+        </inputParameters>
+        <nameSegment>BotShieldResolve</nameSegment>
+        <outputParameters>
+            <assignToReference>requestId</assignToReference>
+            <name>requestId</name>
+        </outputParameters>
+        <outputParameters>
+            <assignToReference>proposeStatus</assignToReference>
+            <name>status</name>
+        </outputParameters>
+        <storeOutputAutomatically>false</storeOutputAutomatically>
+    </actionCalls>
+
+    <apiVersion>65.0</apiVersion>
+    <decisions>
+        <name>Needs_Approval</name>
+        <label>Refund needs a human co-sign?</label>
+        <locationX>176</locationX>
+        <locationY>240</locationY>
+        <defaultConnector><targetReference>Cancel_Booking_Auto</targetReference></defaultConnector>
+        <defaultConnectorLabel>Under threshold — cancel directly</defaultConnectorLabel>
+        <rules>
+            <name>Over_Threshold</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Booking.Total_Price__c</leftValueReference>
+                <operator>GreaterThanOrEqualTo</operator>
+                <rightValue><elementReference>approvalThreshold</elementReference></rightValue>
+            </conditions>
+            <connector><targetReference>Propose_To_BotShield</targetReference></connector>
+            <label>At/over threshold — ask a human</label>
+        </rules>
+    </decisions>
+
+    
+    <decisions>
+        <name>Proposed_OK</name>
+        <label>Queued in BotShield?</label>
+        <locationX>50</locationX>
+        <locationY>480</locationY>
+        <defaultConnectorLabel>Proposal failed</defaultConnectorLabel>
+        <rules>
+            <name>Is_Pending</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>proposeStatus</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue><stringValue>pending</stringValue></rightValue>
+            </conditions>
+            <connector><targetReference>Wait_For_Resolution</targetReference></connector>
+            <label>Pending — wait for the human</label>
+        </rules>
+    </decisions>
+
+    
+    <decisions>
+        <name>Verdict_Decision</name>
+        <label>Human approved?</label>
+        <locationX>50</locationX>
+        <locationY>720</locationY>
+        <defaultConnector><targetReference>Link_Resolution_Only</targetReference></defaultConnector>
+        <defaultConnectorLabel>Denied / expired / cancelled — leave booking</defaultConnectorLabel>
+        <rules>
+            <name>Approved</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>resolutionEvent.Verdict__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue><stringValue>Approved</stringValue></rightValue>
+            </conditions>
+            <connector><targetReference>Cancel_Booking_Approved</targetReference></connector>
+            <label>Approved</label>
+        </rules>
+    </decisions>
+
+    
+    <description>Agents Ask / Q rail — the "money moves, a human co-signs, nobody types" reference. Cancels a Coral Cloud booking and refunds it. Above the approval threshold the Flow asks a designated human through BotShield (agentlink/inquire), PAUSES, and RESUMES when BotShield_Resolution_Event__e lands for its request_id (published by the BotShield_Resolution__c row that the Console push writes). Approved → booking cancelled + resolution linked; anything else → booking untouched.</description>
+    <environments>Default</environments>
+    <formulas>
+        <name>summaryText</name>
+        <dataType>String</dataType>
+        <expression>"Cancel " &amp; {!Get_Booking.Name} &amp; " (" &amp; {!Get_Booking.Experience_Name__c} &amp; ") and refund $" &amp; TEXT({!Get_Booking.Total_Price__c})</expression>
+    </formulas>
+    <formulas>
+        <name>refundText</name>
+        <dataType>String</dataType>
+        <expression>"$" &amp; TEXT({!Get_Booking.Total_Price__c})</expression>
+    </formulas>
+
+    
+    <interviewLabel>BotShield: Cancel booking with refund {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>BotShield: Cancel Booking With Refund (Q pause/resume)</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value><stringValue>LightningFlowBuilder</stringValue></value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value><stringValue>AUTO_LAYOUT_CANVAS</stringValue></value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value><stringValue>LightningFlowBuilder</stringValue></value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <name>Get_Booking</name>
+        <label>Get booking</label>
+        <locationX>176</locationX>
+        <locationY>120</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector><targetReference>Needs_Approval</targetReference></connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value><elementReference>bookingId</elementReference></value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Booking__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+
+    
+    <recordUpdates>
+        <name>Cancel_Booking_Approved</name>
+        <label>Cancel booking (human-approved refund)</label>
+        <locationX>50</locationX>
+        <locationY>840</locationY>
+        <connector><targetReference>Link_Resolution</targetReference></connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value><elementReference>bookingId</elementReference></value>
+        </filters>
+        <inputAssignments>
+            <field>Is_Canceled__c</field>
+            <value><booleanValue>true</booleanValue></value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>BotShield_Request_Id__c</field>
+            <value><elementReference>requestId</elementReference></value>
+        </inputAssignments>
+        <object>Booking__c</object>
+    </recordUpdates>
+
+    
+    <recordUpdates>
+        <name>Link_Resolution</name>
+        <label>Link resolution to booking</label>
+        <locationX>50</locationX>
+        <locationY>960</locationY>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Request_ID__c</field>
+            <operator>EqualTo</operator>
+            <value><elementReference>requestId</elementReference></value>
+        </filters>
+        <inputAssignments>
+            <field>Source_Record_ID__c</field>
+            <value><elementReference>bookingId</elementReference></value>
+        </inputAssignments>
+        <object>BotShield_Resolution__c</object>
+    </recordUpdates>
+
+    <recordUpdates>
+        <name>Link_Resolution_Only</name>
+        <label>Link resolution (not approved)</label>
+        <locationX>314</locationX>
+        <locationY>840</locationY>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Request_ID__c</field>
+            <operator>EqualTo</operator>
+            <value><elementReference>requestId</elementReference></value>
+        </filters>
+        <inputAssignments>
+            <field>Source_Record_ID__c</field>
+            <value><elementReference>bookingId</elementReference></value>
+        </inputAssignments>
+        <object>BotShield_Resolution__c</object>
+    </recordUpdates>
+
+    
+    <recordUpdates>
+        <name>Cancel_Booking_Auto</name>
+        <label>Cancel booking (under threshold)</label>
+        <locationX>578</locationX>
+        <locationY>360</locationY>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value><elementReference>bookingId</elementReference></value>
+        </filters>
+        <inputAssignments>
+            <field>Is_Canceled__c</field>
+            <value><booleanValue>true</booleanValue></value>
+        </inputAssignments>
+        <object>Booking__c</object>
+    </recordUpdates>
+
+    
+    <start>
+        <locationX>176</locationX>
+        <locationY>0</locationY>
+        <connector><targetReference>Get_Booking</targetReference></connector>
+    </start>
+
+    
+    <status>Active</status>
+
+    <variables>
+        <name>actionCategory</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+        <value><stringValue>travel.refund</stringValue></value>
+    </variables>
+    <variables>
+        <name>bookingId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>confirmerEmail</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>approvalThreshold</name>
+        <dataType>Currency</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+        <scale>2</scale>
+        <value><numberValue>100.0</numberValue></value>
+    </variables>
+    <variables>
+        <name>requestId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>true</isOutput>
+    </variables>
+    <variables>
+        <name>proposeStatus</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>true</isOutput>
+    </variables>
+    <variables>
+        <name>resolutionEvent</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>BotShield_Resolution_Event__e</objectType>
+    </variables>
+<waits>
+        <name>Wait_For_Resolution</name>
+        <label>Wait for BotShield resolution</label>
+        <locationX>50</locationX>
+        <locationY>600</locationY>
+        <defaultConnectorLabel>Default Path</defaultConnectorLabel>
+        <waitEvents>
+            <name>Resolution_Landed</name>
+            <connector><targetReference>Verdict_Decision</targetReference></connector>
+            <eventType>BotShield_Resolution_Event__e</eventType>
+            <filterLogic>and</filterLogic>
+            <filters>
+                <field>Request_ID__c</field>
+                <operator>EqualTo</operator>
+                <value><elementReference>requestId</elementReference></value>
+            </filters>
+            <label>Resolution landed</label>
+            <outputParameters>
+                <assignToReference>resolutionEvent</assignToReference>
+                <name>BotShield_Resolution_Event__e</name>
+            </outputParameters>
+        </waitEvents>
+    </waits>
+
+    
+    </Flow>
