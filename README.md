@@ -1,3 +1,5 @@
+> **BotShield demo fork.** This is `trailheadapps/coral-cloud` with a BotShield integration layer (`cc-botshield-app` + agent/site changes). It depends on the **BotShield managed package** (`botshield` namespace). Install the package first, then run `scripts/setup-botshield-demo.sh`. See `cc-botshield-app/README.md`.
+
 # Coral Cloud Resorts
 
 [![CI](https://github.com/trailheadapps/coral-cloud/actions/workflows/ci.yml/badge.svg)](https://github.com/trailheadapps/coral-cloud/actions/workflows/ci.yml)
