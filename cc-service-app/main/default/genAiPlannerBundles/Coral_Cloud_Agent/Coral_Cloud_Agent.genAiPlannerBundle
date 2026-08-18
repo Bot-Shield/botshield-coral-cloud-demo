@@ -1,151 +1,459 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<GenAiPlannerBundle xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<GenAiPlannerBundle xmlns="http://soap.sforce.com/2006/04/metadata">
     <attributeMappings>
-        <attributeName>SvcCopilotTmpl__ServiceCustomerVerification.SvcCopilotTmpl__SendEmailVerificationCode.authenticationKey</attributeName>
-        <attributeType>StandardPluginFunctionOutput</attributeType>
-        <mappingTargetName>authenticationKey</mappingTargetName>
-        <mappingType>Variable</mappingType>
-    </attributeMappings>
-    <attributeMappings>
-        <attributeName>SvcCopilotTmpl__ServiceCustomerVerification.SvcCopilotTmpl__SendEmailVerificationCode.customerId</attributeName>
-        <attributeType>StandardPluginFunctionOutput</attributeType>
-        <mappingTargetName>customerId</mappingTargetName>
-        <mappingType>Variable</mappingType>
-    </attributeMappings>
-    <attributeMappings>
-        <attributeName>SvcCopilotTmpl__ServiceCustomerVerification.SvcCopilotTmpl__SendEmailVerificationCode.customerType</attributeName>
-        <attributeType>StandardPluginFunctionOutput</attributeType>
-        <mappingTargetName>customerType</mappingTargetName>
-        <mappingType>Variable</mappingType>
-    </attributeMappings>
-    <attributeMappings>
-        <attributeName>SvcCopilotTmpl__ServiceCustomerVerification.SvcCopilotTmpl__VerifyCustomer.authenticationKey</attributeName>
-        <attributeType>StandardPluginFunctionInput</attributeType>
-        <mappingTargetName>authenticationKey</mappingTargetName>
-        <mappingType>Variable</mappingType>
-    </attributeMappings>
-    <attributeMappings>
-        <attributeName>SvcCopilotTmpl__ServiceCustomerVerification.SvcCopilotTmpl__VerifyCustomer.customerId</attributeName>
-        <attributeType>StandardPluginFunctionInput</attributeType>
-        <mappingTargetName>customerId</mappingTargetName>
-        <mappingType>Variable</mappingType>
-    </attributeMappings>
-    <attributeMappings>
-        <attributeName>SvcCopilotTmpl__ServiceCustomerVerification.SvcCopilotTmpl__VerifyCustomer.customerType</attributeName>
-        <attributeType>StandardPluginFunctionInput</attributeType>
-        <mappingTargetName>customerType</mappingTargetName>
-        <mappingType>Variable</mappingType>
-    </attributeMappings>
-    <attributeMappings>
-        <attributeName>SvcCopilotTmpl__ServiceCustomerVerification.SvcCopilotTmpl__VerifyCustomer.isVerified</attributeName>
-        <attributeType>StandardPluginFunctionOutput</attributeType>
-        <mappingTargetName>isVerified</mappingTargetName>
-        <mappingType>Variable</mappingType>
-    </attributeMappings>
-    <attributeMappings>
-        <attributeName>SvcCopilotTmpl__ServiceCustomerVerification.SvcCopilotTmpl__VerifyCustomer.customerId</attributeName>
-        <attributeType>StandardPluginFunctionOutput</attributeType>
-        <mappingTargetName>Verified_Customer_Id</mappingTargetName>
-        <mappingType>Variable</mappingType>
-    </attributeMappings>
-    <attributeMappings>
-        <attributeName>Verified_Customer_Support.Generate_Personalized_Schedule_SA.input_contactId</attributeName>
+        <attributeName>BotShield_Customer_Verification_bs1.BotShield_Check_Link_bs1.output_contactId</attributeName>
         <attributeType>CustomPluginFunctionAttribute</attributeType>
         <mappingTargetName>Verified_Customer_Id</mappingTargetName>
         <mappingType>Variable</mappingType>
     </attributeMappings>
     <attributeMappings>
-        <attributeName>Verified_Customer_Support.Create_Booking.input_contactId</attributeName>
+        <attributeName>BotShield_Customer_Verification_bs1.BotShield_Check_Link_bs1.output_isVerified</attributeName>
+        <attributeType>CustomPluginFunctionAttribute</attributeType>
+        <mappingTargetName>isVerified</mappingTargetName>
+        <mappingType>Variable</mappingType>
+    </attributeMappings>
+    <attributeMappings>
+        <attributeName>BotShield_Customer_Verification_bs1.BotShield_Check_Link_bs1.output_opaqueId</attributeName>
+        <attributeType>CustomPluginFunctionAttribute</attributeType>
+        <mappingTargetName>BotShield_Opaque_Id</mappingTargetName>
+        <mappingType>Variable</mappingType>
+    </attributeMappings>
+    <attributeMappings>
+        <attributeName>Verified_Customer_Support_16jbm000002JIpi.BotShield_Require_Confirmation_bs1.input_opaqueId</attributeName>
+        <attributeType>CustomPluginFunctionAttribute</attributeType>
+        <mappingTargetName>BotShield_Opaque_Id</mappingTargetName>
+        <mappingType>Variable</mappingType>
+    </attributeMappings>
+    <attributeMappings>
+        <attributeName>Verified_Customer_Support_16jbm000002JIpi.Generate_Personalized_Schedule_SA_179bm000003s30s.input_contactId</attributeName>
+        <attributeType>CustomPluginFunctionAttribute</attributeType>
+        <mappingTargetName>Verified_Customer_Id</mappingTargetName>
+        <mappingType>Variable</mappingType>
+    </attributeMappings>
+    <attributeMappings>
+        <attributeName>Verified_Customer_Support_16jbm000002JIpi.Create_Booking_179bm000003s30s.input_contactId</attributeName>
         <attributeType>CustomPluginFunctionAttribute</attributeType>
         <mappingTargetName>Verified_Customer_Id</mappingTargetName>
         <mappingType>Variable</mappingType>
     </attributeMappings>
     <description>Helps customers learn more about Experiences as well as book sessions.</description>
-    <genAiFunctions>
-        <genAiFunctionName>EmployeeCopilot__AnswerQuestionsWithKnowledge</genAiFunctionName>
-    </genAiFunctions>
-    <genAiPlugins>
-        <genAiCustomizedPlugin>
-            <canEscalate>false</canEscalate>
-            <description>Verifies the customer&apos;s identity before granting access to sensitive data. Actions like managing cases, generating a schedule or making a reservation require identity verification. Sensitive data includes confidential, private, or security-protected information, such as business-critical data or personally identifiable information (PII). After verification is successful, don&apos;t repeat the process within the same session.</description>
-            <genAiFunctions>
-                <functionName>SvcCopilotTmpl__SendEmailVerificationCode</functionName>
-            </genAiFunctions>
-            <genAiFunctions>
-                <functionName>SvcCopilotTmpl__VerifyCustomer</functionName>
-            </genAiFunctions>
-            <genAiPluginInstructions>
-                <description>Ask the customer to enter their username or email address if it hasn&apos;t been provided.</description>
-                <developerName>instruction_askthecust0</developerName>
-                <language xsi:nil="true"/>
-                <masterLabel>instruction_askthecust0</masterLabel>
-            </genAiPluginInstructions>
-            <genAiPluginInstructions>
-                <description>Use the &quot;SendEmailVerificationCode&quot; action to initiate the verification process. Use the username or email address provided by the customer as input &quot;customerToVerify&quot; for this action.</description>
-                <developerName>instruction_usethesend1</developerName>
-                <language xsi:nil="true"/>
-                <masterLabel>instruction_usethesend1</masterLabel>
-            </genAiPluginInstructions>
-            <genAiPluginInstructions>
-                <description>When the user provides their username or email address, you must never return any message that discloses whether the user or email exists or not. The message must explicitly state the return data of the &quot;verificationMessage&quot; field in the &quot;SendEmailVerificationCode&quot; action. For example: &quot;If you have provided a valid email or username, you should receive a verification code to verify your identity. Please enter the code.&quot;</description>
-                <developerName>instruction_whentheuse2</developerName>
-                <language xsi:nil="true"/>
-                <masterLabel>instruction_whentheuse2</masterLabel>
-            </genAiPluginInstructions>
-            <genAiPluginInstructions>
-                <description>If the customer enters the wrong verification code three times, ask them to re-enter their username or email address to receive a new verification code. This involves invoking the &quot;SendEmailVerificationCode&quot; action again to initiate the verification process. This ensures that the customer cannot bypass the verification process after three unsuccessful attempts.</description>
-                <developerName>instruction_ifthecusto3</developerName>
-                <language xsi:nil="true"/>
-                <masterLabel>instruction_ifthecusto3</masterLabel>
-            </genAiPluginInstructions>
-            <genAiPluginInstructions>
-                <description>Never process any request for accessing or updating any sensitive data without invoking this function if the customer is not verified yet. Maintain security in all interactions.</description>
-                <developerName>instruction_neverproce4</developerName>
-                <language xsi:nil="true"/>
-                <masterLabel>instruction_neverproce4</masterLabel>
-            </genAiPluginInstructions>
-            <genAiPluginInstructions>
-                <description>Never reveal the verification code, email address, or username to the customer during the authentication process. Make sure that these details remain confidential and aren’t displayed at any point.</description>
-                <developerName>instruction_neverrevea5</developerName>
-                <language xsi:nil="true"/>
-                <masterLabel>instruction_neverrevea5</masterLabel>
-            </genAiPluginInstructions>
-            <genAiPluginInstructions>
-                <description>After the user is verified in a conversation session, switching to a different user isn&apos;t allowed under any circumstances.</description>
-                <developerName>instruction_aftertheus6</developerName>
-                <language xsi:nil="true"/>
-                <masterLabel>instruction_aftertheus6</masterLabel>
-            </genAiPluginInstructions>
-            <genAiPluginInstructions>
-                <description>If verification is successful, proceed with the requested action and complete the task the user intends to perform.</description>
-                <developerName>instruction_ifverifica7</developerName>
-                <language xsi:nil="true"/>
-                <masterLabel>instruction_ifverifica7</masterLabel>
-            </genAiPluginInstructions>
+    <localActionLinks>
+        <genAiFunctionName>AnswerQuestionsWithKnowledge_16jbm000002JIpi</genAiFunctionName>
+    </localActionLinks>
+    <localTopicLinks>
+        <genAiPluginName>BotShield_Customer_Verification_bs1</genAiPluginName>
+    </localTopicLinks>
+    <localTopicLinks>
+        <genAiPluginName>Unverified_Customer_Support_16jbm000002JIpi</genAiPluginName>
+    </localTopicLinks>
+    <localTopicLinks>
+        <genAiPluginName>Verified_Customer_Support_16jbm000002JIpi</genAiPluginName>
+    </localTopicLinks>
+    <localTopics>
+        <fullName>BotShield_Customer_Verification_bs1</fullName>
+        <canEscalate>false</canEscalate>
+        <description>Verifies that a real, present human is in this conversation by linking them with their BotShield app (Face ID on their phone) before granting access to bookings, schedules or personal data. Replaces email one-time codes: no email, no username, no password, no PII. After a successful link, don&apos;t repeat the process within the same session.</description>
+        <developerName>BotShield_Customer_Verification_bs1</developerName>
+        <genAiPluginInstructions>
+            <description>When the customer asks for anything that needs verification (booking, generating a schedule, personal data) and they are not verified yet, call &apos;BotShield: Link Human&apos; ONCE and show the customer the returned message VERBATIM — it contains the link to open on their phone, a QR image link for desktop, and a short code. Do NOT ask for an email address, username or password — BotShield verification never uses them.</description>
+            <developerName>instruction_bs_link0</developerName>
             <language>en_US</language>
-            <masterLabel>Service Customer Verification</masterLabel>
-            <name>ServiceCustomerVerification</name>
-            <pluginType>Topic</pluginType>
-            <scope>Your job is to authenticate the customer who has not yet been authenticated before granting access to any sensitive data. You will verify the customer using their email address or username. After verification is successful, don&apos;t repeat the process within the same session.</scope>
-        </genAiCustomizedPlugin>
-        <genAiPluginName>SvcCopilotTmpl__ServiceCustomerVerification</genAiPluginName>
-    </genAiPlugins>
-    <genAiPlugins>
-        <genAiPluginName>Unverified_Customer_Support</genAiPluginName>
-    </genAiPlugins>
-    <genAiPlugins>
-        <genAiPluginName>Verified_Customer_Support</genAiPluginName>
-    </genAiPlugins>
+            <masterLabel>instruction_bs_link0</masterLabel>
+            <sortOrder>0</sortOrder>
+        </genAiPluginInstructions>
+        <genAiPluginInstructions>
+            <description>After showing the link, call &apos;BotShield: Check Link&apos; with the code, and keep calling it every few seconds — do not ask the customer to type anything — until status is &apos;bound&apos;. If status is &apos;expired&apos;, &apos;cancelled&apos; or &apos;not_found&apos;, call &apos;BotShield: Link Human&apos; again for a fresh code and show it.</description>
+            <developerName>instruction_bs_check1</developerName>
+            <language>en_US</language>
+            <masterLabel>instruction_bs_check1</masterLabel>
+            <sortOrder>1</sortOrder>
+        </genAiPluginInstructions>
+        <genAiPluginInstructions>
+            <description>When &apos;BotShield: Check Link&apos; returns status &apos;bound&apos;, the customer is verified: tell them they are linked and proceed with what they asked. Never reveal the opaqueId or contactId to the customer.</description>
+            <developerName>instruction_bs_bound2</developerName>
+            <language>en_US</language>
+            <masterLabel>instruction_bs_bound2</masterLabel>
+            <sortOrder>2</sortOrder>
+        </genAiPluginInstructions>
+        <language>en_US</language>
+        <localActionLinks>
+            <functionName>BotShield_Link_Human_bs1</functionName>
+        </localActionLinks>
+        <localActionLinks>
+            <functionName>BotShield_Check_Link_bs1</functionName>
+        </localActionLinks>
+        <localActions>
+            <fullName>BotShield_Check_Link_bs1</fullName>
+            <description>Check whether the person finished linking with BotShield. Returns pending (keep checking every few seconds), bound (with contactId, isVerified=true and the opaqueId), or expired (start a fresh link).</description>
+            <developerName>BotShield_Check_Link_bs1</developerName>
+            <invocationTarget>BotShieldLinkCheck</invocationTarget>
+            <invocationTargetType>apex</invocationTargetType>
+            <isConfirmationRequired>false</isConfirmationRequired>
+            <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
+            <localDeveloperName>BotShield_Check_Link</localDeveloperName>
+            <mappingAttributes>
+                <label>contactId</label>
+                <name>output_contactId</name>
+                <parameterName>contactId</parameterName>
+                <parameterType>output</parameterType>
+            </mappingAttributes>
+            <mappingAttributes>
+                <label>isVerified</label>
+                <name>output_isVerified</name>
+                <parameterName>isVerified</parameterName>
+                <parameterType>output</parameterType>
+            </mappingAttributes>
+            <mappingAttributes>
+                <label>opaqueId</label>
+                <name>output_opaqueId</name>
+                <parameterName>opaqueId</parameterName>
+                <parameterType>output</parameterType>
+            </mappingAttributes>
+            <masterLabel>BotShield: Check Link</masterLabel>
+            <progressIndicatorMessage>Checking BotShield link...</progressIndicatorMessage>
+            <source>BotShield_Check_Link</source>
+        </localActions>
+        <localActions>
+            <fullName>BotShield_Link_Human_bs1</fullName>
+            <description>Start linking the person in this conversation with their BotShield app so they can prove presence with Face ID. Returns a link to open on the phone, a QR image URL, and a short code (~10 min). Follow with BotShield: Check Link until bound. Never ask for an email.</description>
+            <developerName>BotShield_Link_Human_bs1</developerName>
+            <invocationTarget>BotShieldLinkAction</invocationTarget>
+            <invocationTargetType>apex</invocationTargetType>
+            <isConfirmationRequired>false</isConfirmationRequired>
+            <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
+            <localDeveloperName>BotShield_Link_Human</localDeveloperName>
+            <masterLabel>BotShield: Link Human</masterLabel>
+            <progressIndicatorMessage>Creating your BotShield link...</progressIndicatorMessage>
+            <source>BotShield_Link_Human</source>
+        </localActions>
+        <localDeveloperName>BotShield_Customer_Verification</localDeveloperName>
+        <masterLabel>BotShield Customer Verification</masterLabel>
+        <pluginType>Topic</pluginType>
+        <scope>Your job is to verify a not-yet-verified customer by linking them with their BotShield app before granting access to bookings or personal data. You never ask for emails, usernames or passwords. After a successful link, don&apos;t repeat the process in the same session.</scope>
+        <source>BotShield_Customer_Verification</source>
+    </localTopics>
+    <localTopics>
+        <fullName>Verified_Customer_Support_16jbm000002JIpi</fullName>
+        <canEscalate>false</canEscalate>
+        <description>Address inquiries and issues related to booking experiences at Coral Cloud Resorts, including making reservations, modifying bookings, generating a schedule.</description>
+        <developerName>Verified_Customer_Support_16jbm000002JIpi</developerName>
+        <genAiPluginInstructions>
+            <description>If asked to book, use the action &apos;Create Booking&apos;. The Session record holds the ID of the session from the action &apos;Get Sessions&apos;. If multiple sessions are present, ask to select one of the sessions. Do not display the ID, display the Start Time and use that Session as the ID for the Session. Prompt for the Number of Guests and use that for the Number of Guests.</description>
+            <developerName>instruction_ifaskedtob0</developerName>
+            <language>en_US</language>
+            <masterLabel>instruction_ifaskedtob0</masterLabel>
+            <sortOrder>0</sortOrder>
+        </genAiPluginInstructions>
+        <genAiPluginInstructions>
+            <description>If asked to generate a schedule use the &apos;Generate Personalized Schedule&apos; action. Do not ask for the user&apos;s interest.</description>
+            <developerName>instruction_ifaskedtog1</developerName>
+            <language>en_US</language>
+            <masterLabel>instruction_ifaskedtog1</masterLabel>
+            <sortOrder>1</sortOrder>
+        </genAiPluginInstructions>
+        <genAiPluginInstructions>
+            <description>When asked to generate a schedule or to book an experience, always verify the customer before proceeding.</description>
+            <developerName>instruction_whenaskedt2</developerName>
+            <language>en_US</language>
+            <masterLabel>instruction_whenaskedt2</masterLabel>
+            <sortOrder>2</sortOrder>
+        </genAiPluginInstructions>
+        <genAiPluginInstructions>
+            <description>BOOKING APPROVAL RUNS THROUGH BOTSHIELD, NOT A VERBAL YES. Before calling &apos;Create Booking&apos;: (1) The customer is already linked (their BotShield opaqueId is mapped automatically). Never ask for an email. (2) Call &apos;BotShield: Require Human Confirmation&apos; with actionSummary = a SHORT title like &apos;Book Canyon Zip Line for 2 guests&apos;, actionCategory = &apos;travel.book&apos;, detailLabel = &apos;TOTAL&apos; and detailValue = the formatted price when there is one, and detailsJson = a JSON array of the booking facts (EXPERIENCE, DATE, START, GUESTS) — never put money in detailsJson. Tell the customer the approval was sent to their BotShield app. (3) Call &apos;BotShield: Check Human Confirmation&apos; with the requestId every few seconds until status is not &apos;pending&apos;. (4) Only when confirmed is true call &apos;Create Booking&apos;. If denied, expired or cancelled, do not book and say so plainly. Never ask the customer to type &apos;yes&apos; or &apos;confirm&apos; — the BotShield approval IS the confirmation.</description>
+            <developerName>instruction_botshield3</developerName>
+            <language>en_US</language>
+            <masterLabel>instruction_botshield3</masterLabel>
+            <sortOrder>3</sortOrder>
+        </genAiPluginInstructions>
+        <language>en_US</language>
+        <localActionLinks>
+            <functionName>BotShield_Require_Confirmation_bs1</functionName>
+        </localActionLinks>
+        <localActionLinks>
+            <functionName>BotShield_Check_Confirmation_bs1</functionName>
+        </localActionLinks>
+        <localActionLinks>
+            <functionName>Create_Booking_179bm000003s30s</functionName>
+        </localActionLinks>
+        <localActionLinks>
+            <functionName>Get_Experience_Details_179bm000003s30s</functionName>
+        </localActionLinks>
+        <localActionLinks>
+            <functionName>Get_Sessions_179bm000003s30s</functionName>
+        </localActionLinks>
+        <localActionLinks>
+            <functionName>Generate_Personalized_Schedule_SA_179bm000003s30s</functionName>
+        </localActionLinks>
+        <localActionLinks>
+            <functionName>Check_Weather_179bm000003s30s</functionName>
+        </localActionLinks>
+        <localActionLinks>
+            <functionName>List_Experience_Types_179bm000003s30s</functionName>
+        </localActionLinks>
+        <localActionLinks>
+            <functionName>List_Experiences_from_Type_179bm000003s30s</functionName>
+        </localActionLinks>
+        <localActions>
+            <fullName>Check_Weather_179bm000003s30s</fullName>
+            <description>Check weather at Coral Cloud Resorts at a specific date. The date must be in the future, not today or earlier.</description>
+            <developerName>Check_Weather_179bm000003s30s</developerName>
+            <invocationTarget>CheckWeather</invocationTarget>
+            <invocationTargetType>apex</invocationTargetType>
+            <isConfirmationRequired>false</isConfirmationRequired>
+            <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
+            <localDeveloperName>Check_Weather</localDeveloperName>
+            <masterLabel>Check Weather</masterLabel>
+            <progressIndicatorMessage>Retrieving weather...</progressIndicatorMessage>
+            <source>Check_Weather</source>
+        </localActions>
+        <localActions>
+            <fullName>List_Experiences_from_Type_179bm000003s30s</fullName>
+            <description>Returns a list of experiences based on their type</description>
+            <developerName>List_Experiences_from_Type_179bm000003s30s</developerName>
+            <invocationTarget>ListExperiencesFromType</invocationTarget>
+            <invocationTargetType>apex</invocationTargetType>
+            <isConfirmationRequired>false</isConfirmationRequired>
+            <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
+            <localDeveloperName>List_Experiences_from_Type</localDeveloperName>
+            <masterLabel>List Experiences from Type</masterLabel>
+            <progressIndicatorMessage>Getting experiences from type...</progressIndicatorMessage>
+            <source>List_Experiences_from_Type</source>
+        </localActions>
+        <localActions>
+            <fullName>Get_Sessions_179bm000003s30s</fullName>
+            <description>Get the Sessions__c based on the provided specific Date and the Id of the Experience__c</description>
+            <developerName>Get_Sessions_179bm000003s30s</developerName>
+            <invocationTarget>Get_Sessions</invocationTarget>
+            <invocationTargetType>flow</invocationTargetType>
+            <isConfirmationRequired>false</isConfirmationRequired>
+            <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
+            <localDeveloperName>Get_Sessions</localDeveloperName>
+            <masterLabel>Get Sessions</masterLabel>
+            <progressIndicatorMessage>Retrieving sessions...</progressIndicatorMessage>
+            <source>Get_Sessions</source>
+        </localActions>
+        <localActions>
+            <fullName>List_Experience_Types_179bm000003s30s</fullName>
+            <description>Returns a list of all available experience types</description>
+            <developerName>List_Experience_Types_179bm000003s30s</developerName>
+            <invocationTarget>ListExperienceTypes</invocationTarget>
+            <invocationTargetType>apex</invocationTargetType>
+            <isConfirmationRequired>false</isConfirmationRequired>
+            <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
+            <localDeveloperName>List_Experience_Types</localDeveloperName>
+            <masterLabel>List Experience Types</masterLabel>
+            <progressIndicatorMessage>Getting experience types...</progressIndicatorMessage>
+            <source>List_Experience_Types</source>
+        </localActions>
+        <localActions>
+            <fullName>Create_Booking_179bm000003s30s</fullName>
+            <description>Create a Booking__c record when provided the numberOfGuests, ID of the contact and ID of the Session__c</description>
+            <developerName>Create_Booking_179bm000003s30s</developerName>
+            <invocationTarget>Create_Booking</invocationTarget>
+            <invocationTargetType>flow</invocationTargetType>
+            <isConfirmationRequired>false</isConfirmationRequired>
+            <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
+            <localDeveloperName>Create_Booking</localDeveloperName>
+            <mappingAttributes>
+                <label>contactId</label>
+                <name>input_contactId</name>
+                <parameterName>contactId</parameterName>
+                <parameterType>input</parameterType>
+            </mappingAttributes>
+            <masterLabel>Create Booking</masterLabel>
+            <progressIndicatorMessage>Booking experience...</progressIndicatorMessage>
+            <source>Create_Booking</source>
+        </localActions>
+        <localActions>
+            <fullName>Generate_Personalized_Schedule_SA_179bm000003s30s</fullName>
+            <description>Generate a personalized schedule that includes the time and location of resort experiences that are available today, and that match the guest&apos;s interests.</description>
+            <developerName>Generate_Personalized_Schedule_SA_179bm000003s30s</developerName>
+            <invocationTarget>Generate_Personalized_Schedule</invocationTarget>
+            <invocationTargetType>generatePromptResponse</invocationTargetType>
+            <isConfirmationRequired>false</isConfirmationRequired>
+            <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
+            <localDeveloperName>Generate_Personalized_Schedule_SA</localDeveloperName>
+            <mappingAttributes>
+                <label>Input:contactId</label>
+                <name>input_contactId</name>
+                <parameterName>Input:contactId</parameterName>
+                <parameterType>input</parameterType>
+            </mappingAttributes>
+            <masterLabel>Generate Personalized Schedule (SA)</masterLabel>
+            <progressIndicatorMessage>Generating personalized schedule...</progressIndicatorMessage>
+            <source>Generate_Personalized_Schedule_SA</source>
+        </localActions>
+        <localActions>
+            <fullName>Get_Experience_Details_179bm000003s30s</fullName>
+            <description>Provides details about an Experience__c that a user would like more information about.</description>
+            <developerName>Get_Experience_Details_179bm000003s30s</developerName>
+            <invocationTarget>Get_Experience_Details</invocationTarget>
+            <invocationTargetType>flow</invocationTargetType>
+            <isConfirmationRequired>false</isConfirmationRequired>
+            <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
+            <localDeveloperName>Get_Experience_Details</localDeveloperName>
+            <masterLabel>Get Experience Details</masterLabel>
+            <progressIndicatorMessage>Retrieving experience details...</progressIndicatorMessage>
+            <source>Get_Experience_Details</source>
+        </localActions>
+        <localActions>
+            <fullName>BotShield_Check_Confirmation_bs1</fullName>
+            <description>Poll a pending BotShield confirmation by requestId. Returns confirmed=true only when a present human confirmed with a biometric; reads the org record pushed by BotShield first.</description>
+            <developerName>BotShield_Check_Confirmation_bs1</developerName>
+            <invocationTarget>BotShieldCheck</invocationTarget>
+            <invocationTargetType>apex</invocationTargetType>
+            <isConfirmationRequired>false</isConfirmationRequired>
+            <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
+            <localDeveloperName>BotShield_Check_Confirmation</localDeveloperName>
+            <masterLabel>BotShield: Check Human Confirmation</masterLabel>
+            <progressIndicatorMessage>Checking BotShield approval...</progressIndicatorMessage>
+            <source>BotShield_Check_Confirmation</source>
+        </localActions>
+        <localActions>
+            <fullName>BotShield_Require_Confirmation_bs1</fullName>
+            <description>Ask the linked customer to approve this booking with Face ID in their BotShield app. Returns a requestId and status pending; poll BotShield: Check Human Confirmation until it is not pending. Only book when confirmed.</description>
+            <developerName>BotShield_Require_Confirmation_bs1</developerName>
+            <invocationTarget>BotShieldResolve</invocationTarget>
+            <invocationTargetType>apex</invocationTargetType>
+            <isConfirmationRequired>false</isConfirmationRequired>
+            <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
+            <localDeveloperName>BotShield_Require_Confirmation</localDeveloperName>
+            <mappingAttributes>
+                <label>opaqueId</label>
+                <name>input_opaqueId</name>
+                <parameterName>opaqueId</parameterName>
+                <parameterType>input</parameterType>
+            </mappingAttributes>
+            <masterLabel>BotShield: Require Human Confirmation</masterLabel>
+            <progressIndicatorMessage>Requesting BotShield approval...</progressIndicatorMessage>
+            <source>BotShield_Require_Confirmation</source>
+        </localActions>
+        <localDeveloperName>Verified_Customer_Support</localDeveloperName>
+        <masterLabel>Verified Customer Support</masterLabel>
+        <pluginType>Topic</pluginType>
+        <scope>Your job is to handle bookings and generate personalized schedule.</scope>
+    </localTopics>
+    <localTopics>
+        <fullName>Unverified_Customer_Support_16jbm000002JIpi</fullName>
+        <canEscalate>false</canEscalate>
+        <description>Answer questions regarding activities, sessions or the weather at Coral Cloud Resorts.</description>
+        <developerName>Unverified_Customer_Support_16jbm000002JIpi</developerName>
+        <genAiPluginInstructions>
+            <description>If asked to get sessions for an experience, use the &apos;Get Sessions&apos; action. Ask for the date of the sessions if not provided. Use the Id of the Experience from the &apos;Get Experience Details&apos;.</description>
+            <developerName>instruction_ifaskedtog0</developerName>
+            <language>en_US</language>
+            <masterLabel>instruction_ifaskedtog0</masterLabel>
+            <sortOrder>0</sortOrder>
+        </genAiPluginInstructions>
+        <language>en_US</language>
+        <localActionLinks>
+            <functionName>Check_Weather_179bm000003s30r</functionName>
+        </localActionLinks>
+        <localActionLinks>
+            <functionName>Get_Experience_Details_179bm000003s30r</functionName>
+        </localActionLinks>
+        <localActionLinks>
+            <functionName>Get_Sessions_179bm000003s30r</functionName>
+        </localActionLinks>
+        <localActionLinks>
+            <functionName>List_Experience_Types_179bm000003s30r</functionName>
+        </localActionLinks>
+        <localActionLinks>
+            <functionName>List_Experiences_from_Type_179bm000003s30r</functionName>
+        </localActionLinks>
+        <localActions>
+            <fullName>List_Experience_Types_179bm000003s30r</fullName>
+            <description>Returns a list of all available experience types</description>
+            <developerName>List_Experience_Types_179bm000003s30r</developerName>
+            <invocationTarget>ListExperienceTypes</invocationTarget>
+            <invocationTargetType>apex</invocationTargetType>
+            <isConfirmationRequired>false</isConfirmationRequired>
+            <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
+            <localDeveloperName>List_Experience_Types</localDeveloperName>
+            <masterLabel>List Experience Types</masterLabel>
+            <progressIndicatorMessage>Getting experience types...</progressIndicatorMessage>
+            <source>List_Experience_Types</source>
+        </localActions>
+        <localActions>
+            <fullName>Get_Experience_Details_179bm000003s30r</fullName>
+            <description>Provides details about an Experience__c that a user would like more information about.</description>
+            <developerName>Get_Experience_Details_179bm000003s30r</developerName>
+            <invocationTarget>Get_Experience_Details</invocationTarget>
+            <invocationTargetType>flow</invocationTargetType>
+            <isConfirmationRequired>false</isConfirmationRequired>
+            <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
+            <localDeveloperName>Get_Experience_Details</localDeveloperName>
+            <masterLabel>Get Experience Details</masterLabel>
+            <progressIndicatorMessage>Retrieving experience details...</progressIndicatorMessage>
+            <source>Get_Experience_Details</source>
+        </localActions>
+        <localActions>
+            <fullName>List_Experiences_from_Type_179bm000003s30r</fullName>
+            <description>Returns a list of experiences based on their type</description>
+            <developerName>List_Experiences_from_Type_179bm000003s30r</developerName>
+            <invocationTarget>ListExperiencesFromType</invocationTarget>
+            <invocationTargetType>apex</invocationTargetType>
+            <isConfirmationRequired>false</isConfirmationRequired>
+            <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
+            <localDeveloperName>List_Experiences_from_Type</localDeveloperName>
+            <masterLabel>List Experiences from Type</masterLabel>
+            <progressIndicatorMessage>Getting experiences from type...</progressIndicatorMessage>
+            <source>List_Experiences_from_Type</source>
+        </localActions>
+        <localActions>
+            <fullName>Check_Weather_179bm000003s30r</fullName>
+            <description>Check weather at Coral Cloud Resorts at a specific date. The date must be in the future, not today or earlier.</description>
+            <developerName>Check_Weather_179bm000003s30r</developerName>
+            <invocationTarget>CheckWeather</invocationTarget>
+            <invocationTargetType>apex</invocationTargetType>
+            <isConfirmationRequired>false</isConfirmationRequired>
+            <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
+            <localDeveloperName>Check_Weather</localDeveloperName>
+            <masterLabel>Check Weather</masterLabel>
+            <progressIndicatorMessage>Retrieving weather...</progressIndicatorMessage>
+            <source>Check_Weather</source>
+        </localActions>
+        <localActions>
+            <fullName>Get_Sessions_179bm000003s30r</fullName>
+            <description>Get the Sessions__c based on the provided specific Date and the Id of the Experience__c</description>
+            <developerName>Get_Sessions_179bm000003s30r</developerName>
+            <invocationTarget>Get_Sessions</invocationTarget>
+            <invocationTargetType>flow</invocationTargetType>
+            <isConfirmationRequired>false</isConfirmationRequired>
+            <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
+            <localDeveloperName>Get_Sessions</localDeveloperName>
+            <masterLabel>Get Sessions</masterLabel>
+            <progressIndicatorMessage>Retrieving sessions...</progressIndicatorMessage>
+            <source>Get_Sessions</source>
+        </localActions>
+        <localDeveloperName>Unverified_Customer_Support</localDeveloperName>
+        <masterLabel>Unverified Customer Support</masterLabel>
+        <pluginType>Topic</pluginType>
+        <scope>Your job is to answer questions regarding activities, sessions or the weather at Coral Cloud Resorts. You cannot create bookings or generate schedules. You do not have access to the user details.</scope>
+    </localTopics>
     <masterLabel>Coral Cloud Agent</masterLabel>
+    <plannerActions>
+        <fullName>AnswerQuestionsWithKnowledge_16jbm000002JIpi</fullName>
+        <description>Answers questions about company policies and procedures, troubleshooting steps, or product information. For example: “What is your return policy?” “How do I fix an issue?” or “What features does a product have?”</description>
+        <developerName>AnswerQuestionsWithKnowledge_16jbm000002JIpi</developerName>
+        <invocationTarget>streamKnowledgeSearch</invocationTarget>
+        <invocationTargetType>standardInvocableAction</invocationTargetType>
+        <isConfirmationRequired>false</isConfirmationRequired>
+        <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
+        <localDeveloperName>AnswerQuestionsWithKnowledge</localDeveloperName>
+        <masterLabel>Answer Questions with Knowledge</masterLabel>
+        <progressIndicatorMessage>Getting answers</progressIndicatorMessage>
+        <source>EmployeeCopilot__AnswerQuestionsWithKnowledge</source>
+    </plannerActions>
     <plannerType>AiCopilot__ReAct</plannerType>
     <ruleExpressionAssignments>
         <ruleExpressionName>Is_Unverified_Customer</ruleExpressionName>
-        <targetName>SvcCopilotTmpl__ServiceCustomerVerification</targetName>
+        <targetName>BotShield_Customer_Verification_bs1</targetName>
         <targetType>Plugin</targetType>
     </ruleExpressionAssignments>
     <ruleExpressionAssignments>
         <ruleExpressionName>Is_Verified_Customer</ruleExpressionName>
-        <targetName>Verified_Customer_Support</targetName>
+        <targetName>Verified_Customer_Support_16jbm000002JIpi</targetName>
         <targetType>Plugin</targetType>
     </ruleExpressionAssignments>
     <ruleExpressions>

@@ -1,0 +1,47 @@
+{
+  "unevaluatedProperties" : false,
+  "properties" : {
+    "status" : {
+      "title" : "status",
+      "description" : "pending, bound, expired, cancelled, not_found, revoked or error",
+      "lightning:type" : "lightning__textType",
+      "lightning:isPII" : false,
+      "copilotAction:isDisplayable" : false,
+      "copilotAction:isUsedByPlanner" : true
+    },
+    "opaqueId" : {
+      "title" : "opaqueId",
+      "description" : "Set when bound. Pairwise BotShield address; never show to the customer.",
+      "lightning:type" : "lightning__textType",
+      "lightning:isPII" : false,
+      "copilotAction:isDisplayable" : false,
+      "copilotAction:isUsedByPlanner" : false
+    },
+    "contactId" : {
+      "title" : "contactId",
+      "description" : "Set when bound: the Contact this person is known as.",
+      "lightning:type" : "lightning__textType",
+      "lightning:isPII" : false,
+      "copilotAction:isDisplayable" : false,
+      "copilotAction:isUsedByPlanner" : false
+    },
+    "isVerified" : {
+      "title" : "isVerified",
+      "description" : "true when bound.",
+      "lightning:type" : "lightning__booleanType",
+      "lightning:isPII" : false,
+      "copilotAction:isDisplayable" : false,
+      "copilotAction:isUsedByPlanner" : false
+    },
+    "message" : {
+      "title" : "message",
+      "description" : "Status text.",
+      "lightning:type" : "lightning__textType",
+      "lightning:isPII" : false,
+      "copilotAction:isDisplayable" : false,
+      "copilotAction:isUsedByPlanner" : true
+    }
+  },
+  "lightning:type" : "lightning__objectType",
+  "lightning:textIndexed" : true
+}

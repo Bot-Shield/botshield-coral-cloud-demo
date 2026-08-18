@@ -1,0 +1,22 @@
+{
+  "required" : [ "code" ],
+  "unevaluatedProperties" : false,
+  "properties" : {
+    "code" : {
+      "title" : "code",
+      "description" : "The code returned by BotShield: Link Human.",
+      "lightning:type" : "lightning__textType",
+      "lightning:isPII" : false,
+      "copilotAction:isUserInput" : false
+    },
+    "contactId" : {
+      "title" : "contactId",
+      "description" : "Optional: the verified customer Contact Id, to remember the link for next time.",
+      "lightning:type" : "lightning__textType",
+      "lightning:isPII" : false,
+      "copilotAction:isUserInput" : false
+    }
+  },
+  "lightning:type" : "lightning__objectType",
+  "lightning:textIndexed" : true
+}

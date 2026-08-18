@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GenAiPlugin xmlns="http://soap.sforce.com/2006/04/metadata">
+    <canEscalate>false</canEscalate>
+    <description>Verifies that a real, present human is in this conversation — by linking them with their BotShield app (Face ID on their phone) — before granting access to bookings, schedules or any personal data. Replaces email one-time codes: no email, no password, no PII. After a successful link, don&apos;t repeat the process within the same session.</description>
+    <developerName>BotShield_Customer_Verification</developerName>
+    <genAiFunctions>
+        <functionName>BotShield_Link_Human</functionName>
+    </genAiFunctions>
+    <genAiFunctions>
+        <functionName>BotShield_Check_Link</functionName>
+    </genAiFunctions>
+    <genAiPluginInstructions>
+        <description>When the customer asks for anything that needs verification (booking, schedule, personal data) and they are not verified yet, call &apos;BotShield: Link Human&apos; ONCE and show the customer the returned message VERBATIM — it contains the link to open on their phone, a QR image link for desktop, and a short code. Do NOT ask for an email address, username or password — BotShield verification never uses them.</description>
+        <developerName>instruction_bs_link0</developerName>
+        <language>en_US</language>
+        <masterLabel>instruction_bs_link0</masterLabel>
+    </genAiPluginInstructions>
+    <genAiPluginInstructions>
+        <description>After showing the link, call &apos;BotShield: Check Link&apos; with the code, and keep calling it every few seconds (do not ask the customer to type anything) until status is &apos;bound&apos;. If status is &apos;expired&apos;, &apos;cancelled&apos; or &apos;not_found&apos;, call &apos;BotShield: Link Human&apos; again for a fresh code and show it.</description>
+        <developerName>instruction_bs_check1</developerName>
+        <language>en_US</language>
+        <masterLabel>instruction_bs_check1</masterLabel>
+    </genAiPluginInstructions>
+    <genAiPluginInstructions>
+        <description>When &apos;BotShield: Check Link&apos; returns status &apos;bound&apos;, the customer is verified: tell them they are linked, remember the returned opaqueId for the rest of the conversation, and proceed with what they asked. Never reveal the opaqueId to the customer.</description>
+        <developerName>instruction_bs_bound2</developerName>
+        <language>en_US</language>
+        <masterLabel>instruction_bs_bound2</masterLabel>
+    </genAiPluginInstructions>
+    <language>en_US</language>
+    <masterLabel>BotShield Customer Verification</masterLabel>
+    <pluginType>Topic</pluginType>
+    <scope>Your job is to verify a not-yet-verified customer by linking them with their BotShield app before granting access to bookings or personal data. You never ask for emails, usernames or passwords. After a successful link, don&apos;t repeat the process in the same session.</scope>
+</GenAiPlugin>

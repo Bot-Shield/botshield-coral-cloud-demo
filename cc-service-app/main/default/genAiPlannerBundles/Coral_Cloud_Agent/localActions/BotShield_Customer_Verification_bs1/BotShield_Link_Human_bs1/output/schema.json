@@ -1,0 +1,55 @@
+{
+  "unevaluatedProperties" : false,
+  "properties" : {
+    "status" : {
+      "title" : "status",
+      "description" : "pending or error",
+      "lightning:type" : "lightning__textType",
+      "lightning:isPII" : false,
+      "copilotAction:isDisplayable" : false,
+      "copilotAction:isUsedByPlanner" : true
+    },
+    "code" : {
+      "title" : "code",
+      "description" : "Short 6-character link code.",
+      "lightning:type" : "lightning__textType",
+      "lightning:isPII" : false,
+      "copilotAction:isDisplayable" : false,
+      "copilotAction:isUsedByPlanner" : true
+    },
+    "claimUrl" : {
+      "title" : "claimUrl",
+      "description" : "Deep link the customer opens on their phone.",
+      "lightning:type" : "lightning__textType",
+      "lightning:isPII" : false,
+      "copilotAction:isDisplayable" : true,
+      "copilotAction:isUsedByPlanner" : true
+    },
+    "qrImageUrl" : {
+      "title" : "qrImageUrl",
+      "description" : "PNG of the claim URL for desktop users to scan.",
+      "lightning:type" : "lightning__textType",
+      "lightning:isPII" : false,
+      "copilotAction:isDisplayable" : true,
+      "copilotAction:isUsedByPlanner" : true
+    },
+    "expiresAt" : {
+      "title" : "expiresAt",
+      "description" : "ISO timestamp; about 10 minutes.",
+      "lightning:type" : "lightning__textType",
+      "lightning:isPII" : false,
+      "copilotAction:isDisplayable" : false,
+      "copilotAction:isUsedByPlanner" : true
+    },
+    "message" : {
+      "title" : "message",
+      "description" : "Ready-to-say text for the customer. Show verbatim.",
+      "lightning:type" : "lightning__textType",
+      "lightning:isPII" : false,
+      "copilotAction:isDisplayable" : true,
+      "copilotAction:isUsedByPlanner" : true
+    }
+  },
+  "lightning:type" : "lightning__objectType",
+  "lightning:textIndexed" : true
+}
