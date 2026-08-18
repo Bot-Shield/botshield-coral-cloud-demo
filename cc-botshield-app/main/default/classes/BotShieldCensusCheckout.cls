@@ -178,6 +178,90 @@ public without sharing class BotShieldCensusCheckout {
         return r;
     }
 
+    // ── Cancel with refund (Agents Ask / Q rail hand-off) ────────────────
+
+    public class CancelResult {
+        @AuraEnabled public String status;      // pending | canceled | error
+        @AuraEnabled public String requestId;   // BotShield request id when pending
+        @AuraEnabled public String message;
+    }
+
+    public class CancelStatus {
+        @AuraEnabled public Boolean found = false;
+        @AuraEnabled public Boolean canceled = false;
+        @AuraEnabled public String verdict;     // Approved | Denied | Expired | Cancelled | null (still waiting)
+        @AuraEnabled public String requestId;
+    }
+
+    /**
+     * The customer asks to cancel a booking they just made. Money moves, so
+     * above the threshold a Coral Cloud employee must co-sign: this starts
+     * BotShield_Cancel_Booking_With_Refund, which proposes to the linked
+     * refund approver's opaque ID and PAUSES until the Console-pushed
+     * BotShield_Resolution__c row fires the resume event. Under the threshold
+     * the flow cancels directly. Runs in system mode (autolaunched, guest OK).
+     */
+    @AuraEnabled
+    public static CancelResult requestCancellation(String bookingName) {
+        CancelResult out = new CancelResult();
+        try {
+            if (String.isBlank(bookingName)) { out.status = 'error'; out.message = 'Booking number is required.'; return out; }
+            List<Booking__c> bs = [
+                SELECT Id, Is_Canceled__c, BotShield_Request_Id__c FROM Booking__c WHERE Name = :bookingName LIMIT 1
+            ];
+            if (bs.isEmpty()) { out.status = 'error'; out.message = 'Booking not found.'; return out; }
+            if (bs[0].Is_Canceled__c) { out.status = 'canceled'; out.message = 'Already cancelled.'; return out; }
+
+            Map<String, Object> inputs = new Map<String, Object>{ 'bookingId' => (String) bs[0].Id };
+            Flow.Interview iv = Flow.Interview.createInterview('BotShield_Cancel_Booking_With_Refund', inputs);
+            iv.start();
+            String requestId = (String) iv.getVariableValue('requestId');
+            String proposeStatus = (String) iv.getVariableValue('proposeStatus');
+
+            // Under threshold the flow cancels synchronously (no proposal).
+            Booking__c after = [SELECT Is_Canceled__c FROM Booking__c WHERE Id = :bs[0].Id];
+            if (after.Is_Canceled__c) { out.status = 'canceled'; out.message = 'Cancelled — refund on its way.'; return out; }
+
+            if (proposeStatus == 'pending' && String.isNotBlank(requestId)) {
+                // Remember the request on the booking so the drawer (and anyone
+                // else) can follow the resolution without a session.
+                update new Booking__c(Id = bs[0].Id, BotShield_Request_Id__c = requestId);
+                out.status = 'pending';
+                out.requestId = requestId;
+                out.message = 'A Coral Cloud manager is being asked to approve the refund.';
+                return out;
+            }
+            out.status = 'error';
+            out.message = 'The refund could not be sent for approval.';
+            return out;
+        } catch (Exception e) {
+            out.status = 'error';
+            out.message = 'Something went wrong requesting the cancellation.';
+            return out;
+        }
+    }
+
+    /** What the drawer polls: the org's own view — booking flag + resolution verdict. */
+    @AuraEnabled
+    public static CancelStatus getCancellationStatus(String bookingName) {
+        CancelStatus st = new CancelStatus();
+        if (String.isBlank(bookingName)) { return st; }
+        List<Booking__c> bs = [
+            SELECT Id, Is_Canceled__c, BotShield_Request_Id__c FROM Booking__c WHERE Name = :bookingName LIMIT 1
+        ];
+        if (bs.isEmpty()) { return st; }
+        st.found = true;
+        st.canceled = bs[0].Is_Canceled__c;
+        st.requestId = bs[0].BotShield_Request_Id__c;
+        if (String.isNotBlank(st.requestId)) {
+            List<BotShield_Resolution__c> rs = [
+                SELECT Verdict__c FROM BotShield_Resolution__c WHERE Request_ID__c = :st.requestId LIMIT 1
+            ];
+            if (!rs.isEmpty()) { st.verdict = rs[0].Verdict__c; }
+        }
+        return st;
+    }
+
     private static Id findOrCreateContact(String email) {
         List<Contact> cs = [SELECT Id FROM Contact WHERE Email = :email LIMIT 1];
         if (!cs.isEmpty()) {

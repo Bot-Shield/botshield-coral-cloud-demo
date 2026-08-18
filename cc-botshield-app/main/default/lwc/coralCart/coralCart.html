@@ -126,8 +126,30 @@
             <div class="drawer-body center-col">
                 <div class="check">✓</div>
                 <h3>Bookings confirmed</h3>
-                <p lwc:if={bookingNamesLabel} class="muted">Booking numbers: {bookingNamesLabel}</p>
                 <p class="muted tiny">Human-verified checkout, backed by BotShield Census.</p>
+
+                <!-- Each booking with a Cancel & refund action. Above the refund
+                     threshold a Coral Cloud manager co-signs on their phone
+                     (Agents Ask); the org learns the verdict from BotShield's
+                     push and this row flips. -->
+                <div class="bookings">
+                    <template for:each={bookingRows} for:item="b">
+                        <div key={b.name} class="booking-row">
+                            <div class="booking-main">
+                                <div class="line-name">{b.name}</div>
+                                <div lwc:if={b.isPending} class="booking-status pending">
+                                    <span class="pulse"></span>Refund pending manager approval…
+                                </div>
+                                <div lwc:if={b.isCanceled} class="booking-status ok">✓ {b.message}</div>
+                                <div lwc:if={b.isDeclined} class="booking-status warn">{b.message}</div>
+                                <div lwc:if={b.isError} class="booking-status warn">{b.message}</div>
+                            </div>
+                            <button lwc:if={b.isIdle} type="button" class="linklike" data-name={b.name} onclick={handleCancelBooking}>Cancel &amp; refund</button>
+                            <span lwc:if={b.isRequesting} class="muted tiny">Requesting…</span>
+                        </div>
+                    </template>
+                </div>
+
                 <button type="button" class="primary" onclick={handleCloseDrawer}>Done</button>
             </div>
         </template>

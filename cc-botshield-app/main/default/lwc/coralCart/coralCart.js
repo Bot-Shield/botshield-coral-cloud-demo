@@ -1,5 +1,7 @@
 import { LightningElement } from 'lwc';
 import checkout from '@salesforce/apex/BotShieldCensusCheckout.checkout';
+import requestCancellation from '@salesforce/apex/BotShieldCensusCheckout.requestCancellation';
+import getCancellationStatus from '@salesforce/apex/BotShieldCensusCheckout.getCancellationStatus';
 
 /**
  * Coral Cloud cart — Shopify-style slide-out checkout drawer, gated by the
@@ -52,6 +54,10 @@ export default class CoralCart extends LightningElement {
     censusRequestId = null;
     bookingNames = [];
     errorMessage = '';
+    // Confirmation-screen cancellations: bookingName -> { state, message }
+    // state: idle | requesting | pending | canceled | declined | error
+    cancels = {};
+    _cancelPolls = {};
 
     cdnBase = CDN_BASE;
     siteKey = SITE_KEY;
@@ -87,6 +93,8 @@ export default class CoralCart extends LightningElement {
 
     disconnectedCallback() {
         window.removeEventListener(CART_EVENT, this._onAdd);
+        Object.values(this._cancelPolls).forEach((t) => clearInterval(t));
+        this._cancelPolls = {};
     }
 
     // ── cart state ────────────────────────────────────────────────────────
@@ -221,6 +229,73 @@ export default class CoralCart extends LightningElement {
     handleTryAgain() {
         this.phase = 'cart';
         this.censusRequestId = null;
+    }
+
+    // ── confirmation screen: cancel with refund (Q rail hand-off) ─────────
+
+    get bookingRows() {
+        return this.bookingNames.map((name) => {
+            const c = this.cancels[name] || { state: 'idle' };
+            return {
+                name,
+                state: c.state,
+                message: c.message,
+                isIdle: c.state === 'idle',
+                isRequesting: c.state === 'requesting',
+                isPending: c.state === 'pending',
+                isCanceled: c.state === 'canceled',
+                isDeclined: c.state === 'declined',
+                isError: c.state === 'error'
+            };
+        });
+    }
+
+    setCancel(name, patch) {
+        this.cancels = { ...this.cancels, [name]: { ...(this.cancels[name] || {}), ...patch } };
+    }
+
+    async handleCancelBooking(evt) {
+        const name = evt.currentTarget.dataset.name;
+        if (!name) return;
+        this.setCancel(name, { state: 'requesting', message: '' });
+        try {
+            const res = await requestCancellation({ bookingName: name });
+            if (res.status === 'canceled') {
+                this.setCancel(name, { state: 'canceled', message: res.message });
+            } else if (res.status === 'pending') {
+                this.setCancel(name, { state: 'pending', message: res.message });
+                this.watchCancel(name);
+            } else {
+                this.setCancel(name, { state: 'error', message: res.message || 'Could not request the cancellation.' });
+            }
+        } catch (e) {
+            this.setCancel(name, { state: 'error', message: 'Could not reach the booking service.' });
+        }
+    }
+
+    /** The manager approves on their phone; BotShield pushes the resolution
+     *  into the org; the flow resumes and flips the booking. We watch the org. */
+    watchCancel(name) {
+        if (this._cancelPolls[name]) clearInterval(this._cancelPolls[name]);
+        const startedAt = Date.now();
+        this._cancelPolls[name] = setInterval(async () => {
+            if (Date.now() - startedAt > 11 * 60000) { // flow TTL 10 min + margin
+                clearInterval(this._cancelPolls[name]); delete this._cancelPolls[name];
+                this.setCancel(name, { state: 'declined', message: 'No decision arrived in time — the booking stays as is.' });
+                return;
+            }
+            try {
+                const st = await getCancellationStatus({ bookingName: name });
+                if (!st || !st.found) return;
+                if (st.canceled) {
+                    clearInterval(this._cancelPolls[name]); delete this._cancelPolls[name];
+                    this.setCancel(name, { state: 'canceled', message: 'Refund approved — booking cancelled.' });
+                } else if (st.verdict && st.verdict !== 'Approved') {
+                    clearInterval(this._cancelPolls[name]); delete this._cancelPolls[name];
+                    this.setCancel(name, { state: 'declined', message: `Refund ${String(st.verdict).toLowerCase()} — the booking stays as is.` });
+                }
+            } catch (e) { /* keep watching */ }
+        }, 3000);
     }
 
     // ── display ───────────────────────────────────────────────────────────

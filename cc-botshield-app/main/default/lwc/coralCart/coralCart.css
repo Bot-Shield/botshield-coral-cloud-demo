@@ -266,3 +266,13 @@
     align-items: center;
     justify-content: center;
 }
+
+/* Confirmation screen — per-booking cancel/refund rows */
+.bookings { width: 100%; text-align: left; margin: 6px 0 4px; }
+.booking-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 9px 0; border-bottom: 1px solid #eef1f3; }
+.booking-status { font-size: 12px; margin-top: 3px; display: flex; align-items: center; gap: 7px; }
+.booking-status.pending { color: #64727a; }
+.booking-status.ok { color: #14532d; }
+.booking-status.warn { color: #9a3412; }
+.pulse { width: 7px; height: 7px; border-radius: 4px; background: #147baa; display: inline-block; animation: cc-pulse 1.5s ease-in-out infinite; }
+@keyframes cc-pulse { 0%,100% { opacity: 1 } 50% { opacity: .35 } }
