@@ -14,7 +14,7 @@
     },
     "contactId": {
       "title": "contactId",
-      "description": "The verified customer Contact Id (mapped automatically).",
+      "description": "The customer's Contact Id \u2014 use the contactId returned by BotShield: Check Link.",
       "lightning:type": "lightning__textType",
       "lightning:isPII": false,
       "copilotAction:isUserInput": false

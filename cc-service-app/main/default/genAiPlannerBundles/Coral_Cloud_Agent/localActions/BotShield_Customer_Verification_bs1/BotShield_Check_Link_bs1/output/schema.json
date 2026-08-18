@@ -19,11 +19,11 @@
     },
     "contactId": {
       "title": "contactId",
-      "description": "Set when bound: the Contact this person is known as.",
+      "description": "Set when bound: the customer's Contact Id. Pass it as contactId to Coral Cloud: List My Bookings and Coral Cloud: Cancel Booking With Refund.",
       "lightning:type": "lightning__textType",
       "lightning:isPII": false,
       "copilotAction:isDisplayable": false,
-      "copilotAction:isUsedByPlanner": false
+      "copilotAction:isUsedByPlanner": true
     },
     "isVerified": {
       "title": "isVerified",
