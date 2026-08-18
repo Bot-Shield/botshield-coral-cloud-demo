@@ -14,10 +14,7 @@
             <value><elementReference>summaryText</elementReference></value>
         </inputParameters>
         <inputParameters><name>actionCategory</name><value><elementReference>actionCategory</elementReference></value></inputParameters>
-        <inputParameters>
-            <name>confirmerEmail</name>
-            <value><elementReference>confirmerEmail</elementReference></value>
-        </inputParameters>
+        <inputParameters><name>opaqueId</name><value><elementReference>Get_Approver_Link.Opaque_ID__c</elementReference></value></inputParameters>
         <inputParameters>
             <name>sourceRecordId</name>
             <value><elementReference>bookingId</elementReference></value>
@@ -48,6 +45,24 @@
 
     <apiVersion>65.0</apiVersion>
     <decisions>
+        <name>Has_Approver</name>
+        <label>Is a refund approver linked?</label>
+        <locationX>50</locationX>
+        <locationY>330</locationY>
+        <defaultConnectorLabel>No linked approver — stop</defaultConnectorLabel>
+        <rules>
+            <name>Approver_Linked</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Approver_Link.Opaque_ID__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue><booleanValue>false</booleanValue></rightValue>
+            </conditions>
+            <connector><targetReference>Propose_To_BotShield</targetReference></connector>
+            <label>Approver linked</label>
+        </rules>
+    </decisions>
+    <decisions>
         <name>Needs_Approval</name>
         <label>Refund needs a human co-sign?</label>
         <locationX>176</locationX>
@@ -62,7 +77,7 @@
                 <operator>GreaterThanOrEqualTo</operator>
                 <rightValue><elementReference>approvalThreshold</elementReference></rightValue>
             </conditions>
-            <connector><targetReference>Propose_To_BotShield</targetReference></connector>
+            <connector><targetReference>Get_Approver_Link</targetReference></connector>
             <label>At/over threshold — ask a human</label>
         </rules>
     </decisions>
@@ -138,6 +153,22 @@
         <value><stringValue>LightningFlowBuilder</stringValue></value>
     </processMetadataValues>
     <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <name>Get_Approver_Link</name>
+        <label>Get refund approver's BotShield link</label>
+        <locationX>50</locationX>
+        <locationY>300</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector><targetReference>Has_Approver</targetReference></connector>
+        <filterLogic>and</filterLogic>
+        <filters><field>Status__c</field><operator>EqualTo</operator><value><stringValue>Active</stringValue></value></filters>
+        <filters><field>Is_Refund_Approver__c</field><operator>EqualTo</operator><value><booleanValue>true</booleanValue></value></filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>BotShield_Link__c</object>
+        <sortField>Linked_At__c</sortField>
+        <sortOrder>Desc</sortOrder>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
     <recordLookups>
         <name>Get_Booking</name>
         <label>Get booking</label>
@@ -237,6 +268,7 @@
     </recordUpdates>
 
     
+    <runInMode>SystemModeWithoutSharing</runInMode>
     <start>
         <locationX>176</locationX>
         <locationY>0</locationY>
@@ -256,13 +288,6 @@
     </variables>
     <variables>
         <name>bookingId</name>
-        <dataType>String</dataType>
-        <isCollection>false</isCollection>
-        <isInput>true</isInput>
-        <isOutput>false</isOutput>
-    </variables>
-    <variables>
-        <name>confirmerEmail</name>
         <dataType>String</dataType>
         <isCollection>false</isCollection>
         <isInput>true</isInput>
