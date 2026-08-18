@@ -140,14 +140,7 @@
         <genAiPluginInstructions>
             <description>If asked to book, use the action &apos;Create Booking&apos;. The Session record holds the ID of the session from the action &apos;Get Sessions&apos;. If multiple sessions are present, ask to select one of the sessions. Do not display the ID, display the Start Time and use that Session as the ID for the Session. Prompt for the Number of Guests and use that for the Number of Guests.</description>
             <developerName>instruction_ifaskedtob0</developerName>
-            <genAiPluginInstructions>
-            <description>When you refer to a booking — confirming it, quoting a confirmation number, or answering &quot;what is my booking ID/confirmation number&quot; — ALWAYS use the booking&apos;s Booking Number (the record Name, e.g. B-00001608). NEVER show a Salesforce record Id (an 18-character value like a02bm00000...). After &apos;Create Booking&apos; succeeds, tell the customer: &quot;Your booking number is B-… &quot; using the Name of the created booking.</description>
-            <developerName>instruction_bookingnum4</developerName>
             <language>en_US</language>
-            <masterLabel>instruction_bookingnum4</masterLabel>
-            <sortOrder>4</sortOrder>
-        </genAiPluginInstructions>
-        <language>en_US</language>
             <masterLabel>instruction_ifaskedtob0</masterLabel>
             <sortOrder>0</sortOrder>
         </genAiPluginInstructions>
@@ -171,6 +164,13 @@
             <language>en_US</language>
             <masterLabel>instruction_botshield3</masterLabel>
             <sortOrder>3</sortOrder>
+        </genAiPluginInstructions>
+        <genAiPluginInstructions>
+            <description>When you refer to a booking — confirming it, quoting a confirmation number, or answering &quot;what is my booking ID/confirmation number&quot; — ALWAYS use the booking&apos;s Booking Number (the record Name, e.g. B-00001608). NEVER show a Salesforce record Id (an 18-character value like a02bm00000...). After &apos;Create Booking&apos; succeeds, tell the customer: &quot;Your booking number is B-…&quot; using the Name of the created booking.</description>
+            <developerName>instruction_bookingnum4</developerName>
+            <language>en_US</language>
+            <masterLabel>instruction_bookingnum4</masterLabel>
+            <sortOrder>4</sortOrder>
         </genAiPluginInstructions>
         <language>en_US</language>
         <localActionLinks>
