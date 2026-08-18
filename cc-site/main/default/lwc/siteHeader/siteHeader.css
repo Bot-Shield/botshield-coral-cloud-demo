@@ -23,21 +23,13 @@
 .nav ul li a:hover {
     text-decoration: underline;
 }
-.book-now {
-    background-color: #04545f !important;
-    color: #ffffff !important;
-    padding: 15px 15px; /* Equal padding for square button */
-    border-radius: 0; /* Remove rounded corners */
-    text-decoration: none;
-    font-weight: bold;
-    display: inline-block;
-    text-align: center;
-}
-.book-now:hover {
-    background-color: #14212c;
-}
 .nav-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+/* Reserve the top-right slot for the floating cart (c-coral-cart .fab:
+   52px wide at right:24px) so the last menu item never sits under it. */
+.nav-links {
+    padding-right: 96px;
 }
