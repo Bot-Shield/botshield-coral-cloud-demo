@@ -24,6 +24,14 @@ export default class ExperienceSchedule extends NavigationMixin(
     date = new Date();
     isCommunity;
 
+    get isInternal() {
+        return this.isCommunity === false;
+    }
+    /** Site: fields span the card (no icon column). Internal: leave room for the preview icon. */
+    get sessionFieldsClass() {
+        return this.isCommunity ? 'slds-size_1-of-1' : 'slds-size_11-of-12';
+    }
+
     @wire(isCommunity)
     wiredCommunityInfo({ error, data }) {
         if (error) {

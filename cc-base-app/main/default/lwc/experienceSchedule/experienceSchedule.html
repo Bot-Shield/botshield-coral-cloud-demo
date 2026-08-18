@@ -79,7 +79,7 @@
                             class="slds-box slds-box_xx-small slds-p-top_small slds-p-bottom_x-small slds-m-bottom_xx-small"
                         >
                             <div class="slds-grid slds-wrap">
-                                <div class="slds-size_11-of-12">
+                                <div class={sessionFieldsClass}>
                                     <div class="slds-grid slds-wrap">
                                         <!-- Start time -->
                                         <div class="slds-size_1-of-3">
@@ -162,7 +162,12 @@
                                                             class="slds-form-element__control"
                                                             id={session.labelPrice}
                                                         >
-                                                            {session.Experience__r.Price__c}
+                                                            <lightning-formatted-number
+                                                                value={session.Experience__r.Price__c}
+                                                                format-style="currency"
+                                                                currency-code="USD"
+                                                                minimum-fraction-digits="2"
+                                                            ></lightning-formatted-number>
                                                         </div>
                                                     </template>
                                                     <template lwc:else>
@@ -228,24 +233,32 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <!-- Add to cart (site only) — full-width button under
+                                             the bookings bar; the checkout lives in c-coral-cart. -->
+                                        <template lwc:if={isCommunity}>
+                                            <div class="slds-size_1-of-1 slds-m-top_small">
+                                                <lightning-button
+                                                    lwc:if={session.isFutureStart}
+                                                    variant="brand"
+                                                    label="Add Experience"
+                                                    title="Add this session to your experiences"
+                                                    icon-name="utility:add"
+                                                    data-id={session.Id}
+                                                    onclick={handleBookSessionClick}
+                                                    class="add-experience"
+                                                    stretch
+                                                ></lightning-button>
+                                                <p lwc:else class="slds-text-color_weak slds-text-body_small">
+                                                    This session has already started.
+                                                </p>
+                                            </div>
+                                        </template>
                                     </div>
                                 </div>
-                                <div
-                                    class="slds-size_1-of-12 slds-align_absolute-center"
-                                >
-                                    <template lwc:if={isCommunity}>
-                                        <lightning-button-icon
-                                            lwc:if={session.isFutureStart}
-                                            icon-name="utility:cart"
-                                            variant="bare"
-                                            data-id={session.Id}
-                                            size="large"
-                                            onclick={handleBookSessionClick}
-                                            title="Book session"
-                                            alternative-text="Book session"
-                                        ></lightning-button-icon>
-                                    </template>
-                                    <template lwc:else>
+                                <template lwc:if={isInternal}>
+                                    <div
+                                        class="slds-size_1-of-12 slds-align_absolute-center"
+                                    >
                                         <lightning-button-icon
                                             icon-name="action:preview"
                                             variant="brand"
@@ -255,8 +268,8 @@
                                             title="Open record"
                                             alternative-text="Open record"
                                         ></lightning-button-icon>
-                                    </template>
-                                </div>
+                                    </div>
+                                </template>
                             </div>
                         </div>
                     </template>
