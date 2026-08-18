@@ -399,3 +399,13 @@
    pill resolving via MultiPass and the org row landing. */
 .bs-confirming { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 8px; font-size: 12px; color: #8f979e; }
 .bs-confirming .bs-modal-pulse { margin: 0; }
+
+/* Census attribution lockup is BRAND, not state: it never turns green/red with
+   the pill. Theme-only colour (mirrors the SDK fix of 2026-08-17). */
+.bs-root .bs-branding,
+.bs-root.theme-light .bs-branding,
+.bs-root.theme-auto .bs-branding { color: #000000; }
+.bs-root.theme-dark .bs-branding { color: #cecfd2; }
+@media (prefers-color-scheme: dark) {
+  .bs-root.theme-auto .bs-branding { color: #cecfd2; }
+}
