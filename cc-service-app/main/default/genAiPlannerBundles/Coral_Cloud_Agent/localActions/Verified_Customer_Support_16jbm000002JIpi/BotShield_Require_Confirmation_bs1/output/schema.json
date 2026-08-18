@@ -1,39 +1,39 @@
 {
-  "unevaluatedProperties" : false,
-  "properties" : {
-    "requestId" : {
-      "title" : "requestId",
-      "description" : "The BotShield request id to poll with BotShield: Check Human Confirmation.",
-      "lightning:type" : "lightning__textType",
-      "lightning:isPII" : false,
-      "copilotAction:isDisplayable" : false,
-      "copilotAction:isUsedByPlanner" : true
+  "unevaluatedProperties": false,
+  "properties": {
+    "requestId": {
+      "title": "requestId",
+      "description": "The BotShield request id to poll with BotShield: Check Human Confirmation.",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isDisplayable": false,
+      "copilotAction:isUsedByPlanner": true
     },
-    "status" : {
-      "title" : "status",
-      "description" : "pending, approved, denied, expired, cancelled or error",
-      "lightning:type" : "lightning__textType",
-      "lightning:isPII" : false,
-      "copilotAction:isDisplayable" : false,
-      "copilotAction:isUsedByPlanner" : true
+    "status": {
+      "title": "status",
+      "description": "pending, approved, denied, expired, cancelled or error",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isDisplayable": false,
+      "copilotAction:isUsedByPlanner": true
     },
-    "confirmed" : {
-      "title" : "confirmed",
-      "description" : "True only when a present human approved.",
-      "lightning:type" : "lightning__booleanType",
-      "lightning:isPII" : false,
-      "copilotAction:isDisplayable" : false,
-      "copilotAction:isUsedByPlanner" : true
+    "confirmed": {
+      "title": "confirmed",
+      "description": "True only when a present human approved.",
+      "lightning:type": "lightning__booleanType",
+      "lightning:isPII": false,
+      "copilotAction:isDisplayable": false,
+      "copilotAction:isUsedByPlanner": true
     },
-    "reason" : {
-      "title" : "reason",
-      "description" : "Human-readable status detail.",
-      "lightning:type" : "lightning__textType",
-      "lightning:isPII" : false,
-      "copilotAction:isDisplayable" : false,
-      "copilotAction:isUsedByPlanner" : true
+    "reason": {
+      "title": "reason",
+      "description": "Human-readable status detail.",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isDisplayable": false,
+      "copilotAction:isUsedByPlanner": true
     }
   },
-  "lightning:type" : "lightning__objectType",
-  "lightning:textIndexed" : true
+  "lightning:type": "lightning__objectType",
+  "lightning:textIndexed": true
 }

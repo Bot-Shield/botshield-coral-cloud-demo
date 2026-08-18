@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<GenAiPlannerBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+<GenAiPlannerBundle xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <attributeMappings>
         <attributeName>BotShield_Customer_Verification_bs1.BotShield_Check_Link_bs1.output_contactId</attributeName>
         <attributeType>CustomPluginFunctionAttribute</attributeType>
@@ -83,6 +83,19 @@
             <functionName>BotShield_Check_Link_bs1</functionName>
         </localActionLinks>
         <localActions>
+            <fullName>BotShield_Link_Human_bs1</fullName>
+            <description>Start linking the person in this conversation with their BotShield app so they can prove presence with Face ID. Returns a link to open on the phone, a QR image URL, and a short code (~10 min). Follow with BotShield: Check Link until bound. Never ask for an email.</description>
+            <developerName>BotShield_Link_Human_bs1</developerName>
+            <invocationTarget>BotShieldLinkAction</invocationTarget>
+            <invocationTargetType>apex</invocationTargetType>
+            <isConfirmationRequired>false</isConfirmationRequired>
+            <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
+            <localDeveloperName>BotShield_Link_Human</localDeveloperName>
+            <masterLabel>BotShield: Link Human</masterLabel>
+            <progressIndicatorMessage>Creating your BotShield link...</progressIndicatorMessage>
+            <source>BotShield_Link_Human</source>
+        </localActions>
+        <localActions>
             <fullName>BotShield_Check_Link_bs1</fullName>
             <description>Check whether the person finished linking with BotShield. Returns pending (keep checking every few seconds), bound (with contactId, isVerified=true and the opaqueId), or expired (start a fresh link).</description>
             <developerName>BotShield_Check_Link_bs1</developerName>
@@ -113,19 +126,6 @@
             <progressIndicatorMessage>Checking BotShield link...</progressIndicatorMessage>
             <source>BotShield_Check_Link</source>
         </localActions>
-        <localActions>
-            <fullName>BotShield_Link_Human_bs1</fullName>
-            <description>Start linking the person in this conversation with their BotShield app so they can prove presence with Face ID. Returns a link to open on the phone, a QR image URL, and a short code (~10 min). Follow with BotShield: Check Link until bound. Never ask for an email.</description>
-            <developerName>BotShield_Link_Human_bs1</developerName>
-            <invocationTarget>BotShieldLinkAction</invocationTarget>
-            <invocationTargetType>apex</invocationTargetType>
-            <isConfirmationRequired>false</isConfirmationRequired>
-            <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
-            <localDeveloperName>BotShield_Link_Human</localDeveloperName>
-            <masterLabel>BotShield: Link Human</masterLabel>
-            <progressIndicatorMessage>Creating your BotShield link...</progressIndicatorMessage>
-            <source>BotShield_Link_Human</source>
-        </localActions>
         <localDeveloperName>BotShield_Customer_Verification</localDeveloperName>
         <masterLabel>BotShield Customer Verification</masterLabel>
         <pluginType>Topic</pluginType>
@@ -149,17 +149,17 @@
             <developerName>instruction_ifaskedtog1</developerName>
             <language>en_US</language>
             <masterLabel>instruction_ifaskedtog1</masterLabel>
-            <sortOrder>1</sortOrder>
+            <sortOrder>0</sortOrder>
         </genAiPluginInstructions>
         <genAiPluginInstructions>
             <description>When asked to generate a schedule or to book an experience, always verify the customer before proceeding.</description>
             <developerName>instruction_whenaskedt2</developerName>
             <language>en_US</language>
             <masterLabel>instruction_whenaskedt2</masterLabel>
-            <sortOrder>2</sortOrder>
+            <sortOrder>0</sortOrder>
         </genAiPluginInstructions>
         <genAiPluginInstructions>
-            <description>BOOKING APPROVAL RUNS THROUGH BOTSHIELD, NOT A VERBAL YES. Before calling &apos;Create Booking&apos;: (1) The customer is already linked (their BotShield opaqueId is mapped automatically). Never ask for an email. (2) Call &apos;BotShield: Require Human Confirmation&apos; with actionSummary = a SHORT title like &apos;Book Canyon Zip Line for 2 guests&apos;, actionCategory = &apos;travel.book&apos;, detailLabel = &apos;TOTAL&apos; and detailValue = the formatted price when there is one, and detailsJson = a JSON array of the booking facts (EXPERIENCE, DATE, START, GUESTS) — never put money in detailsJson. Tell the customer the approval was sent to their BotShield app. (3) Call &apos;BotShield: Check Human Confirmation&apos; with the requestId every few seconds until status is not &apos;pending&apos;. (4) Only when confirmed is true call &apos;Create Booking&apos;. If denied, expired or cancelled, do not book and say so plainly. Never ask the customer to type &apos;yes&apos; or &apos;confirm&apos; — the BotShield approval IS the confirmation.</description>
+            <description>BOOKING APPROVAL RUNS THROUGH BOTSHIELD, NOT A VERBAL YES. Before calling &apos;Create Booking&apos;: (1) The customer is already linked (their BotShield opaqueId is mapped automatically). Never ask for an email. (2) Call &apos;BotShield: Require Human Confirmation&apos; with actionSummary = a SHORT title like &apos;Book Canyon Zip Line for 2 guests&apos;, actionCategory = &apos;travel.book&apos;, detailLabel = &apos;TOTAL&apos; and detailValue = the booking total formatted as currency — ALWAYS compute it as the session Price (from Get Sessions) multiplied by the number of guests, e.g. 2 guests × $150 = &apos;$300.00&apos; — and detailsJson = a JSON array of the booking facts (EXPERIENCE, DATE, START, GUESTS) — never put money in detailsJson. Tell the customer the approval was sent to their BotShield app. (3) Call &apos;BotShield: Check Human Confirmation&apos; with the requestId every few seconds until status is not &apos;pending&apos;. (4) Only when confirmed is true call &apos;Create Booking&apos;. If denied, expired or cancelled, do not book and say so plainly. Never ask the customer to type &apos;yes&apos; or &apos;confirm&apos; — the BotShield approval IS the confirmation.</description>
             <developerName>instruction_botshield3</developerName>
             <language>en_US</language>
             <masterLabel>instruction_botshield3</masterLabel>
@@ -194,17 +194,36 @@
             <functionName>List_Experiences_from_Type_179bm000003s30s</functionName>
         </localActionLinks>
         <localActions>
-            <fullName>Check_Weather_179bm000003s30s</fullName>
-            <description>Check weather at Coral Cloud Resorts at a specific date. The date must be in the future, not today or earlier.</description>
-            <developerName>Check_Weather_179bm000003s30s</developerName>
-            <invocationTarget>CheckWeather</invocationTarget>
+            <fullName>BotShield_Require_Confirmation_bs1</fullName>
+            <description>Ask the linked customer to approve this booking with Face ID in their BotShield app. Returns a requestId and status pending; poll BotShield: Check Human Confirmation until it is not pending. Only book when confirmed.</description>
+            <developerName>BotShield_Require_Confirmation_bs1</developerName>
+            <invocationTarget>BotShieldResolve</invocationTarget>
             <invocationTargetType>apex</invocationTargetType>
             <isConfirmationRequired>false</isConfirmationRequired>
             <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
-            <localDeveloperName>Check_Weather</localDeveloperName>
-            <masterLabel>Check Weather</masterLabel>
-            <progressIndicatorMessage>Retrieving weather...</progressIndicatorMessage>
-            <source>Check_Weather</source>
+            <localDeveloperName>BotShield_Require_Confirmation</localDeveloperName>
+            <mappingAttributes>
+                <label>opaqueId</label>
+                <name>input_opaqueId</name>
+                <parameterName>opaqueId</parameterName>
+                <parameterType>input</parameterType>
+            </mappingAttributes>
+            <masterLabel>BotShield: Require Human Confirmation</masterLabel>
+            <progressIndicatorMessage>Requesting BotShield approval...</progressIndicatorMessage>
+            <source>BotShield_Require_Confirmation</source>
+        </localActions>
+        <localActions>
+            <fullName>BotShield_Check_Confirmation_bs1</fullName>
+            <description>Poll a pending BotShield confirmation by requestId. Returns confirmed=true only when a present human confirmed with a biometric; reads the org record pushed by BotShield first.</description>
+            <developerName>BotShield_Check_Confirmation_bs1</developerName>
+            <invocationTarget>BotShieldCheck</invocationTarget>
+            <invocationTargetType>apex</invocationTargetType>
+            <isConfirmationRequired>false</isConfirmationRequired>
+            <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
+            <localDeveloperName>BotShield_Check_Confirmation</localDeveloperName>
+            <masterLabel>BotShield: Check Human Confirmation</masterLabel>
+            <progressIndicatorMessage>Checking BotShield approval...</progressIndicatorMessage>
+            <source>BotShield_Check_Confirmation</source>
         </localActions>
         <localActions>
             <fullName>List_Experiences_from_Type_179bm000003s30s</fullName>
@@ -220,17 +239,17 @@
             <source>List_Experiences_from_Type</source>
         </localActions>
         <localActions>
-            <fullName>Get_Sessions_179bm000003s30s</fullName>
-            <description>Get the Sessions__c based on the provided specific Date and the Id of the Experience__c</description>
-            <developerName>Get_Sessions_179bm000003s30s</developerName>
-            <invocationTarget>Get_Sessions</invocationTarget>
-            <invocationTargetType>flow</invocationTargetType>
+            <fullName>Check_Weather_179bm000003s30s</fullName>
+            <description>Check weather at Coral Cloud Resorts at a specific date. The date must be in the future, not today or earlier.</description>
+            <developerName>Check_Weather_179bm000003s30s</developerName>
+            <invocationTarget>CheckWeather</invocationTarget>
+            <invocationTargetType>apex</invocationTargetType>
             <isConfirmationRequired>false</isConfirmationRequired>
             <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
-            <localDeveloperName>Get_Sessions</localDeveloperName>
-            <masterLabel>Get Sessions</masterLabel>
-            <progressIndicatorMessage>Retrieving sessions...</progressIndicatorMessage>
-            <source>Get_Sessions</source>
+            <localDeveloperName>Check_Weather</localDeveloperName>
+            <masterLabel>Check Weather</masterLabel>
+            <progressIndicatorMessage>Retrieving weather...</progressIndicatorMessage>
+            <source>Check_Weather</source>
         </localActions>
         <localActions>
             <fullName>List_Experience_Types_179bm000003s30s</fullName>
@@ -246,23 +265,17 @@
             <source>List_Experience_Types</source>
         </localActions>
         <localActions>
-            <fullName>Create_Booking_179bm000003s30s</fullName>
-            <description>Create a Booking__c record when provided the numberOfGuests, ID of the contact and ID of the Session__c</description>
-            <developerName>Create_Booking_179bm000003s30s</developerName>
-            <invocationTarget>Create_Booking</invocationTarget>
+            <fullName>Get_Sessions_179bm000003s30s</fullName>
+            <description>Get the Sessions__c based on the provided specific Date and the Id of the Experience__c</description>
+            <developerName>Get_Sessions_179bm000003s30s</developerName>
+            <invocationTarget>Get_Sessions</invocationTarget>
             <invocationTargetType>flow</invocationTargetType>
             <isConfirmationRequired>false</isConfirmationRequired>
             <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
-            <localDeveloperName>Create_Booking</localDeveloperName>
-            <mappingAttributes>
-                <label>contactId</label>
-                <name>input_contactId</name>
-                <parameterName>contactId</parameterName>
-                <parameterType>input</parameterType>
-            </mappingAttributes>
-            <masterLabel>Create Booking</masterLabel>
-            <progressIndicatorMessage>Booking experience...</progressIndicatorMessage>
-            <source>Create_Booking</source>
+            <localDeveloperName>Get_Sessions</localDeveloperName>
+            <masterLabel>Get Sessions</masterLabel>
+            <progressIndicatorMessage>Retrieving sessions...</progressIndicatorMessage>
+            <source>Get_Sessions</source>
         </localActions>
         <localActions>
             <fullName>Generate_Personalized_Schedule_SA_179bm000003s30s</fullName>
@@ -284,6 +297,25 @@
             <source>Generate_Personalized_Schedule_SA</source>
         </localActions>
         <localActions>
+            <fullName>Create_Booking_179bm000003s30s</fullName>
+            <description>Create a Booking__c record when provided the numberOfGuests, ID of the contact and ID of the Session__c</description>
+            <developerName>Create_Booking_179bm000003s30s</developerName>
+            <invocationTarget>Create_Booking</invocationTarget>
+            <invocationTargetType>flow</invocationTargetType>
+            <isConfirmationRequired>false</isConfirmationRequired>
+            <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
+            <localDeveloperName>Create_Booking</localDeveloperName>
+            <mappingAttributes>
+                <label>contactId</label>
+                <name>input_contactId</name>
+                <parameterName>contactId</parameterName>
+                <parameterType>input</parameterType>
+            </mappingAttributes>
+            <masterLabel>Create Booking</masterLabel>
+            <progressIndicatorMessage>Booking experience...</progressIndicatorMessage>
+            <source>Create_Booking</source>
+        </localActions>
+        <localActions>
             <fullName>Get_Experience_Details_179bm000003s30s</fullName>
             <description>Provides details about an Experience__c that a user would like more information about.</description>
             <developerName>Get_Experience_Details_179bm000003s30s</developerName>
@@ -295,38 +327,6 @@
             <masterLabel>Get Experience Details</masterLabel>
             <progressIndicatorMessage>Retrieving experience details...</progressIndicatorMessage>
             <source>Get_Experience_Details</source>
-        </localActions>
-        <localActions>
-            <fullName>BotShield_Check_Confirmation_bs1</fullName>
-            <description>Poll a pending BotShield confirmation by requestId. Returns confirmed=true only when a present human confirmed with a biometric; reads the org record pushed by BotShield first.</description>
-            <developerName>BotShield_Check_Confirmation_bs1</developerName>
-            <invocationTarget>BotShieldCheck</invocationTarget>
-            <invocationTargetType>apex</invocationTargetType>
-            <isConfirmationRequired>false</isConfirmationRequired>
-            <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
-            <localDeveloperName>BotShield_Check_Confirmation</localDeveloperName>
-            <masterLabel>BotShield: Check Human Confirmation</masterLabel>
-            <progressIndicatorMessage>Checking BotShield approval...</progressIndicatorMessage>
-            <source>BotShield_Check_Confirmation</source>
-        </localActions>
-        <localActions>
-            <fullName>BotShield_Require_Confirmation_bs1</fullName>
-            <description>Ask the linked customer to approve this booking with Face ID in their BotShield app. Returns a requestId and status pending; poll BotShield: Check Human Confirmation until it is not pending. Only book when confirmed.</description>
-            <developerName>BotShield_Require_Confirmation_bs1</developerName>
-            <invocationTarget>BotShieldResolve</invocationTarget>
-            <invocationTargetType>apex</invocationTargetType>
-            <isConfirmationRequired>false</isConfirmationRequired>
-            <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
-            <localDeveloperName>BotShield_Require_Confirmation</localDeveloperName>
-            <mappingAttributes>
-                <label>opaqueId</label>
-                <name>input_opaqueId</name>
-                <parameterName>opaqueId</parameterName>
-                <parameterType>input</parameterType>
-            </mappingAttributes>
-            <masterLabel>BotShield: Require Human Confirmation</masterLabel>
-            <progressIndicatorMessage>Requesting BotShield approval...</progressIndicatorMessage>
-            <source>BotShield_Require_Confirmation</source>
         </localActions>
         <localDeveloperName>Verified_Customer_Support</localDeveloperName>
         <masterLabel>Verified Customer Support</masterLabel>
@@ -375,19 +375,6 @@
             <source>List_Experience_Types</source>
         </localActions>
         <localActions>
-            <fullName>Get_Experience_Details_179bm000003s30r</fullName>
-            <description>Provides details about an Experience__c that a user would like more information about.</description>
-            <developerName>Get_Experience_Details_179bm000003s30r</developerName>
-            <invocationTarget>Get_Experience_Details</invocationTarget>
-            <invocationTargetType>flow</invocationTargetType>
-            <isConfirmationRequired>false</isConfirmationRequired>
-            <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
-            <localDeveloperName>Get_Experience_Details</localDeveloperName>
-            <masterLabel>Get Experience Details</masterLabel>
-            <progressIndicatorMessage>Retrieving experience details...</progressIndicatorMessage>
-            <source>Get_Experience_Details</source>
-        </localActions>
-        <localActions>
             <fullName>List_Experiences_from_Type_179bm000003s30r</fullName>
             <description>Returns a list of experiences based on their type</description>
             <developerName>List_Experiences_from_Type_179bm000003s30r</developerName>
@@ -401,17 +388,17 @@
             <source>List_Experiences_from_Type</source>
         </localActions>
         <localActions>
-            <fullName>Check_Weather_179bm000003s30r</fullName>
-            <description>Check weather at Coral Cloud Resorts at a specific date. The date must be in the future, not today or earlier.</description>
-            <developerName>Check_Weather_179bm000003s30r</developerName>
-            <invocationTarget>CheckWeather</invocationTarget>
-            <invocationTargetType>apex</invocationTargetType>
+            <fullName>Get_Experience_Details_179bm000003s30r</fullName>
+            <description>Provides details about an Experience__c that a user would like more information about.</description>
+            <developerName>Get_Experience_Details_179bm000003s30r</developerName>
+            <invocationTarget>Get_Experience_Details</invocationTarget>
+            <invocationTargetType>flow</invocationTargetType>
             <isConfirmationRequired>false</isConfirmationRequired>
             <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
-            <localDeveloperName>Check_Weather</localDeveloperName>
-            <masterLabel>Check Weather</masterLabel>
-            <progressIndicatorMessage>Retrieving weather...</progressIndicatorMessage>
-            <source>Check_Weather</source>
+            <localDeveloperName>Get_Experience_Details</localDeveloperName>
+            <masterLabel>Get Experience Details</masterLabel>
+            <progressIndicatorMessage>Retrieving experience details...</progressIndicatorMessage>
+            <source>Get_Experience_Details</source>
         </localActions>
         <localActions>
             <fullName>Get_Sessions_179bm000003s30r</fullName>
@@ -425,6 +412,19 @@
             <masterLabel>Get Sessions</masterLabel>
             <progressIndicatorMessage>Retrieving sessions...</progressIndicatorMessage>
             <source>Get_Sessions</source>
+        </localActions>
+        <localActions>
+            <fullName>Check_Weather_179bm000003s30r</fullName>
+            <description>Check weather at Coral Cloud Resorts at a specific date. The date must be in the future, not today or earlier.</description>
+            <developerName>Check_Weather_179bm000003s30r</developerName>
+            <invocationTarget>CheckWeather</invocationTarget>
+            <invocationTargetType>apex</invocationTargetType>
+            <isConfirmationRequired>false</isConfirmationRequired>
+            <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
+            <localDeveloperName>Check_Weather</localDeveloperName>
+            <masterLabel>Check Weather</masterLabel>
+            <progressIndicatorMessage>Retrieving weather...</progressIndicatorMessage>
+            <source>Check_Weather</source>
         </localActions>
         <localDeveloperName>Unverified_Customer_Support</localDeveloperName>
         <masterLabel>Unverified Customer Support</masterLabel>

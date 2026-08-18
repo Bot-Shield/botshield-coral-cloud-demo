@@ -1,50 +1,55 @@
 {
-  "required" : [ "actionSummary", "actionCategory" ],
-  "unevaluatedProperties" : false,
-  "properties" : {
-    "actionSummary" : {
-      "title" : "actionSummary",
-      "description" : "A SHORT one-line card title ONLY, e.g. Book Canyon Zip Line for 2 guests. Do not list facts or price here.",
-      "lightning:type" : "lightning__textType",
-      "lightning:isPII" : false,
-      "copilotAction:isUserInput" : false
+  "required": [
+    "actionCategory",
+    "actionSummary",
+    "detailLabel",
+    "detailValue"
+  ],
+  "unevaluatedProperties": false,
+  "properties": {
+    "actionSummary": {
+      "title": "actionSummary",
+      "description": "A SHORT one-line card title ONLY, e.g. Book Canyon Zip Line for 2 guests. Do not list facts or price here.",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isUserInput": false
     },
-    "opaqueId" : {
-      "title" : "opaqueId",
-      "description" : "The pairwise BotShield opaque ID of the approver. Mapped automatically from the conversation; never an email.",
-      "lightning:type" : "lightning__textType",
-      "lightning:isPII" : false,
-      "copilotAction:isUserInput" : false
+    "opaqueId": {
+      "title": "opaqueId",
+      "description": "The pairwise BotShield opaque ID of the approver. Mapped automatically from the conversation; never an email.",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isUserInput": false
     },
-    "actionCategory" : {
-      "title" : "actionCategory",
-      "description" : "Confirmation category. Always use travel.book.",
-      "lightning:type" : "lightning__textType",
-      "lightning:isPII" : false,
-      "copilotAction:isUserInput" : false
+    "actionCategory": {
+      "title": "actionCategory",
+      "description": "Confirmation category. Always use travel.book.",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isUserInput": false
     },
-    "detailLabel" : {
-      "title" : "detailLabel",
-      "description" : "Reserved for the total ONLY: set to exactly TOTAL when the booking has a price.",
-      "lightning:type" : "lightning__textType",
-      "lightning:isPII" : false,
-      "copilotAction:isUserInput" : false
+    "detailLabel": {
+      "title": "detailLabel",
+      "description": "REQUIRED for bookings: set to exactly TOTAL.",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isUserInput": false
     },
-    "detailValue" : {
-      "title" : "detailValue",
-      "description" : "The formatted total, e.g. $2,400. Only money goes here.",
-      "lightning:type" : "lightning__textType",
-      "lightning:isPII" : false,
-      "copilotAction:isUserInput" : false
+    "detailValue": {
+      "title": "detailValue",
+      "description": "REQUIRED for bookings: the total as currency = session Price \u00d7 number of guests, e.g. $300.00. Only money goes here.",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isUserInput": false
     },
-    "detailsJson" : {
-      "title" : "detailsJson",
-      "description" : "JSON array (as a string) of the booking facts, each {\"title\":\"...\",\"value\":\"...\"}: EXPERIENCE, DATE, START, GUESTS. Never include money here.",
-      "lightning:type" : "lightning__textType",
-      "lightning:isPII" : false,
-      "copilotAction:isUserInput" : false
+    "detailsJson": {
+      "title": "detailsJson",
+      "description": "JSON array (as a string) of the booking facts, each {\"title\":\"...\",\"value\":\"...\"}: EXPERIENCE, DATE, START, GUESTS. Never include money here.",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isUserInput": false
     }
   },
-  "lightning:type" : "lightning__objectType",
-  "lightning:textIndexed" : true
+  "lightning:type": "lightning__objectType",
+  "lightning:textIndexed": true
 }

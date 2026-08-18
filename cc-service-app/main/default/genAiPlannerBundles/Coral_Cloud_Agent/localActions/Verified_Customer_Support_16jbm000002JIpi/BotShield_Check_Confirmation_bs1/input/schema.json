@@ -1,36 +1,38 @@
 {
-  "required" : [ "requestId" ],
-  "unevaluatedProperties" : false,
-  "properties" : {
-    "requestId" : {
-      "title" : "requestId",
-      "description" : "The requestId returned by BotShield: Require Human Confirmation.",
-      "lightning:type" : "lightning__textType",
-      "lightning:isPII" : false,
-      "copilotAction:isUserInput" : false
+  "required": [
+    "requestId"
+  ],
+  "unevaluatedProperties": false,
+  "properties": {
+    "requestId": {
+      "title": "requestId",
+      "description": "The requestId returned by BotShield: Require Human Confirmation.",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isUserInput": false
     },
-    "actionSummary" : {
-      "title" : "actionSummary",
-      "description" : "Optional: the action summary.",
-      "lightning:type" : "lightning__textType",
-      "lightning:isPII" : false,
-      "copilotAction:isUserInput" : false
+    "actionSummary": {
+      "title": "actionSummary",
+      "description": "Optional: the action summary.",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isUserInput": false
     },
-    "actionCategory" : {
-      "title" : "actionCategory",
-      "description" : "Optional: the action category.",
-      "lightning:type" : "lightning__textType",
-      "lightning:isPII" : false,
-      "copilotAction:isUserInput" : false
+    "actionCategory": {
+      "title": "actionCategory",
+      "description": "Optional: the action category.",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isUserInput": false
     },
-    "sourceRecordId" : {
-      "title" : "sourceRecordId",
-      "description" : "Optional: source record Id to link the resolution to.",
-      "lightning:type" : "lightning__textType",
-      "lightning:isPII" : false,
-      "copilotAction:isUserInput" : false
+    "sourceRecordId": {
+      "title": "sourceRecordId",
+      "description": "Optional: source record Id to link the resolution to.",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isUserInput": false
     }
   },
-  "lightning:type" : "lightning__objectType",
-  "lightning:textIndexed" : true
+  "lightning:type": "lightning__objectType",
+  "lightning:textIndexed": true
 }
