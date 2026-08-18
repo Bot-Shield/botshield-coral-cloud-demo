@@ -21,7 +21,7 @@
         </inputParameters>
         <inputParameters>
             <name>detailLabel</name>
-            <value><stringValue>Refund</stringValue></value>
+            <value><stringValue>REFUND</stringValue></value>
         </inputParameters>
         <inputParameters>
             <name>detailValue</name>
