@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<GenAiFunction xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Check whether a pending cancellation/refund has been decided: canceled, declined or still pending.</description>
+    <developerName>Coral_Refund_Status</developerName>
+    <invocationTarget>CoralRefundStatusAction</invocationTarget>
+    <invocationTargetType>apex</invocationTargetType>
+    <isConfirmationRequired>false</isConfirmationRequired>
+    <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
+    <localDeveloperName>Coral_Refund_Status</localDeveloperName>
+    <masterLabel>Coral Cloud: Check Refund Status</masterLabel>
+    <progressIndicatorMessage>Checking refund status...</progressIndicatorMessage>
+</GenAiFunction>

@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <GenAiPlannerBundle xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <attributeMappings>
+        <attributeName>Verified_Customer_Support_16jbm000002JIpi.Coral_Cancel_Booking_bs1.input_contactId</attributeName>
+        <attributeType>CustomPluginFunctionAttribute</attributeType>
+        <mappingTargetName>Verified_Customer_Id</mappingTargetName>
+        <mappingType>Variable</mappingType>
+    </attributeMappings>
+    <attributeMappings>
+        <attributeName>Verified_Customer_Support_16jbm000002JIpi.Coral_My_Bookings_bs1.input_contactId</attributeName>
+        <attributeType>CustomPluginFunctionAttribute</attributeType>
+        <mappingTargetName>Verified_Customer_Id</mappingTargetName>
+        <mappingType>Variable</mappingType>
+    </attributeMappings>
+    <attributeMappings>
         <attributeName>BotShield_Customer_Verification_bs1.BotShield_Check_Link_bs1.output_contactId</attributeName>
         <attributeType>CustomPluginFunctionAttribute</attributeType>
         <mappingTargetName>Verified_Customer_Id</mappingTargetName>
@@ -172,7 +184,23 @@
             <masterLabel>instruction_bookingnum4</masterLabel>
             <sortOrder>4</sortOrder>
         </genAiPluginInstructions>
+        <genAiPluginInstructions>
+            <description>CANCELLATIONS AND REFUNDS. If the customer asks to cancel a booking: (1) If you do not know the booking number, call &apos;Coral Cloud: List My Bookings&apos; and identify the booking (confirm which one if ambiguous — refer to bookings by Booking Number). (2) Call &apos;Coral Cloud: Cancel Booking With Refund&apos; with the booking number. If status is &apos;pending&apos;, tell the customer the refund amount and that a Coral Cloud manager is approving it on their phone via BotShield. (3) Poll &apos;Coral Cloud: Check Refund Status&apos; with the booking number every few seconds until status is not &apos;pending&apos;. (4) Report the outcome plainly: canceled = &quot;Your booking B-… is cancelled and the refund of $… is approved&quot;; declined = the booking stays as is. Never cancel a booking that is not the customer&apos;s own; never ask the customer to type &apos;yes&apos; — the manager&apos;s BotShield approval is the authorization.</description>
+            <developerName>instruction_cancelrefund5</developerName>
+            <language>en_US</language>
+            <masterLabel>instruction_cancelrefund5</masterLabel>
+            <sortOrder>5</sortOrder>
+        </genAiPluginInstructions>
         <language>en_US</language>
+        <localActionLinks>
+            <functionName>Coral_Cancel_Booking_bs1</functionName>
+        </localActionLinks>
+        <localActionLinks>
+            <functionName>Coral_Refund_Status_bs1</functionName>
+        </localActionLinks>
+        <localActionLinks>
+            <functionName>Coral_My_Bookings_bs1</functionName>
+        </localActionLinks>
         <localActionLinks>
             <functionName>BotShield_Require_Confirmation_bs1</functionName>
         </localActionLinks>
@@ -200,6 +228,57 @@
         <localActionLinks>
             <functionName>List_Experiences_from_Type_179bm000003s30s</functionName>
         </localActionLinks>
+        <localActions>
+            <fullName>Coral_Cancel_Booking_bs1</fullName>
+            <description>Cancel one of the verified customer&apos;s bookings and refund it. Above the threshold a Coral Cloud manager must approve on their phone via BotShield: returns status pending with a requestId while outstanding, canceled if done, or error. Then poll Coral Cloud: Check Refund Status.</description>
+            <developerName>Coral_Cancel_Booking_bs1</developerName>
+            <invocationTarget>CoralCancelBookingAction</invocationTarget>
+            <invocationTargetType>apex</invocationTargetType>
+            <isConfirmationRequired>false</isConfirmationRequired>
+            <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
+            <localDeveloperName>Coral_Cancel_Booking</localDeveloperName>
+            <mappingAttributes>
+                <label>contactId</label>
+                <name>input_contactId</name>
+                <parameterName>contactId</parameterName>
+                <parameterType>input</parameterType>
+            </mappingAttributes>
+            <masterLabel>Coral Cloud: Cancel Booking With Refund</masterLabel>
+            <progressIndicatorMessage>Requesting the cancellation...</progressIndicatorMessage>
+            <source>Coral_Cancel_Booking</source>
+        </localActions>
+        <localActions>
+            <fullName>Coral_Refund_Status_bs1</fullName>
+            <description>Check whether a pending cancellation/refund has been decided: canceled (approved and cancelled), declined (denied/expired/cancelled — booking stays), or pending (keep polling every few seconds).</description>
+            <developerName>Coral_Refund_Status_bs1</developerName>
+            <invocationTarget>CoralRefundStatusAction</invocationTarget>
+            <invocationTargetType>apex</invocationTargetType>
+            <isConfirmationRequired>false</isConfirmationRequired>
+            <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
+            <localDeveloperName>Coral_Refund_Status</localDeveloperName>
+            <masterLabel>Coral Cloud: Check Refund Status</masterLabel>
+            <progressIndicatorMessage>Checking refund status...</progressIndicatorMessage>
+            <source>Coral_Refund_Status</source>
+        </localActions>
+        <localActions>
+            <fullName>Coral_My_Bookings_bs1</fullName>
+            <description>List the verified customer&apos;s bookings with their booking numbers. Use it to find the booking number when the customer refers to a booking by experience or date.</description>
+            <developerName>Coral_My_Bookings_bs1</developerName>
+            <invocationTarget>CoralMyBookingsAction</invocationTarget>
+            <invocationTargetType>apex</invocationTargetType>
+            <isConfirmationRequired>false</isConfirmationRequired>
+            <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
+            <localDeveloperName>Coral_My_Bookings</localDeveloperName>
+            <mappingAttributes>
+                <label>contactId</label>
+                <name>input_contactId</name>
+                <parameterName>contactId</parameterName>
+                <parameterType>input</parameterType>
+            </mappingAttributes>
+            <masterLabel>Coral Cloud: List My Bookings</masterLabel>
+            <progressIndicatorMessage>Looking up your bookings...</progressIndicatorMessage>
+            <source>Coral_My_Bookings</source>
+        </localActions>
         <localActions>
             <fullName>BotShield_Require_Confirmation_bs1</fullName>
             <description>Ask the linked customer to approve this booking with Face ID in their BotShield app. Returns a requestId and status pending; poll BotShield: Check Human Confirmation until it is not pending. Only book when confirmed.</description>

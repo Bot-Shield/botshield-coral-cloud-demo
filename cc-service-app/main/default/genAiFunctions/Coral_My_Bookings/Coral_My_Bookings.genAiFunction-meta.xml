@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<GenAiFunction xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>List the verified customer&apos;s bookings with their booking numbers.</description>
+    <developerName>Coral_My_Bookings</developerName>
+    <invocationTarget>CoralMyBookingsAction</invocationTarget>
+    <invocationTargetType>apex</invocationTargetType>
+    <isConfirmationRequired>false</isConfirmationRequired>
+    <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
+    <localDeveloperName>Coral_My_Bookings</localDeveloperName>
+    <masterLabel>Coral Cloud: List My Bookings</masterLabel>
+    <progressIndicatorMessage>Looking up your bookings...</progressIndicatorMessage>
+</GenAiFunction>

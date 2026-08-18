@@ -1,0 +1,55 @@
+{
+  "unevaluatedProperties": false,
+  "properties": {
+    "status": {
+      "title": "status",
+      "description": "pending, canceled, declined or error",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isDisplayable": false,
+      "copilotAction:isUsedByPlanner": true
+    },
+    "canceled": {
+      "title": "canceled",
+      "description": "True when the booking is cancelled.",
+      "lightning:type": "lightning__booleanType",
+      "lightning:isPII": false,
+      "copilotAction:isDisplayable": false,
+      "copilotAction:isUsedByPlanner": true
+    },
+    "verdict": {
+      "title": "verdict",
+      "description": "Approved, Denied, Expired or Cancelled once decided.",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isDisplayable": false,
+      "copilotAction:isUsedByPlanner": true
+    },
+    "found": {
+      "title": "found",
+      "description": "Booking exists.",
+      "lightning:type": "lightning__booleanType",
+      "lightning:isPII": false,
+      "copilotAction:isDisplayable": false,
+      "copilotAction:isUsedByPlanner": false
+    },
+    "bookingNumber": {
+      "title": "bookingNumber",
+      "description": "Booking number.",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isDisplayable": false,
+      "copilotAction:isUsedByPlanner": true
+    },
+    "message": {
+      "title": "message",
+      "description": "Ready-to-say status text.",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isDisplayable": false,
+      "copilotAction:isUsedByPlanner": true
+    }
+  },
+  "lightning:type": "lightning__objectType",
+  "lightning:textIndexed": true
+}

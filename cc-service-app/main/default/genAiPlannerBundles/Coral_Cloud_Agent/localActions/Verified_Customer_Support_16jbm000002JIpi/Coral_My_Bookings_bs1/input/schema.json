@@ -1,0 +1,17 @@
+{
+  "required": [
+    "contactId"
+  ],
+  "unevaluatedProperties": false,
+  "properties": {
+    "contactId": {
+      "title": "contactId",
+      "description": "The verified customer Contact Id (mapped automatically).",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isUserInput": false
+    }
+  },
+  "lightning:type": "lightning__objectType",
+  "lightning:textIndexed": true
+}

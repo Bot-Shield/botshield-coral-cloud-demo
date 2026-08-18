@@ -1,0 +1,23 @@
+{
+  "unevaluatedProperties": false,
+  "properties": {
+    "bookings": {
+      "title": "bookings",
+      "description": "One line per booking, starting with the booking number.",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isDisplayable": true,
+      "copilotAction:isUsedByPlanner": true
+    },
+    "count": {
+      "title": "count",
+      "description": "Number of bookings.",
+      "lightning:type": "lightning__numberType",
+      "lightning:isPII": false,
+      "copilotAction:isDisplayable": false,
+      "copilotAction:isUsedByPlanner": true
+    }
+  },
+  "lightning:type": "lightning__objectType",
+  "lightning:textIndexed": true
+}

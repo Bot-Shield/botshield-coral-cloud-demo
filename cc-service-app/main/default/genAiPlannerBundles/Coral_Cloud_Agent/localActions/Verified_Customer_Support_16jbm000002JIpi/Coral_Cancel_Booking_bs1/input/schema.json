@@ -1,0 +1,25 @@
+{
+  "required": [
+    "bookingNumber",
+    "contactId"
+  ],
+  "unevaluatedProperties": false,
+  "properties": {
+    "bookingNumber": {
+      "title": "bookingNumber",
+      "description": "The booking number, e.g. B-00001608.",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isUserInput": false
+    },
+    "contactId": {
+      "title": "contactId",
+      "description": "The verified customer Contact Id (mapped automatically).",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isUserInput": false
+    }
+  },
+  "lightning:type": "lightning__objectType",
+  "lightning:textIndexed": true
+}

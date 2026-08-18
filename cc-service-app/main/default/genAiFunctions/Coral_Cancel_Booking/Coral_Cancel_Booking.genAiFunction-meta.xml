@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<GenAiFunction xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Cancel one of the verified customer&apos;s bookings and refund it; above the threshold a Coral Cloud manager approves via BotShield (returns pending + requestId, canceled, or error). Poll Coral Cloud: Check Refund Status afterwards.</description>
+    <developerName>Coral_Cancel_Booking</developerName>
+    <invocationTarget>CoralCancelBookingAction</invocationTarget>
+    <invocationTargetType>apex</invocationTargetType>
+    <isConfirmationRequired>false</isConfirmationRequired>
+    <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
+    <localDeveloperName>Coral_Cancel_Booking</localDeveloperName>
+    <masterLabel>Coral Cloud: Cancel Booking With Refund</masterLabel>
+    <progressIndicatorMessage>Requesting the cancellation...</progressIndicatorMessage>
+</GenAiFunction>

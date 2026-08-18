@@ -8,6 +8,18 @@
     </flowAccesses>
     <hasActivationRequired>false</hasActivationRequired>
     <classAccesses>
+        <apexClass>CoralCancelBookingAction</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>CoralRefundStatusAction</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>CoralMyBookingsAction</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>BotShieldBookingController</apexClass>
         <enabled>true</enabled>
     </classAccesses>
