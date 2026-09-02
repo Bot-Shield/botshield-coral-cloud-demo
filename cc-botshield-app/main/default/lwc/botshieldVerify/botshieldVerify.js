@@ -177,11 +177,16 @@ export default class BotshieldVerify extends LightningElement {
         }
         const verdict = result && result.verdict;
         if (!verdict) return 'continue';
-        if (verdict === 'pass') {
-            const rs = result.result_state;
-            this.state = rs === 'multipass_active' || result.reason === 'multipass_active' ? 'multipass_active' : 'verified';
+        // Census two-result-state contract (RFC 43 §11 / 46 §B): gate on
+        // result_state — 'human_verified' | 'unavailable'. `verdict` is only the
+        // widget's flow signal ('pass' → done, 'require_presence' → run the
+        // ceremony). The retired 5-value `reason` enum and the 'multipass_active'
+        // state no longer cross the wire; a returning user simply reads verified.
+        const rs = result.result_state;
+        if (rs === 'human_verified' || (rs == null && verdict === 'pass')) {
+            this.state = 'verified';
             this.requestId = result.request_id || result.event_id || null;
-            this.emitSuccess({ via: 'multipass', reason: result.reason });
+            this.emitSuccess({ via: 'multipass' });
             if (this.transport === 'salesforce') {
                 // BotShield pushes a Census row for evaluate-pass outcomes keyed
                 // by this request_id; watch for it before unlocking checkout.
@@ -278,7 +283,9 @@ export default class BotshieldVerify extends LightningElement {
                         detail: { requestId: this.requestId, token: this.token, state: this.state }
                     }));
                 } else {
-                    this.finish(vs.resultState === 'MultiPass Active' ? 'multipass_active' : 'verified', null, 'salesforce');
+                    // 'MultiPass Active' is a dead Result_State__c value — the backend
+                    // only pushes 'Human Verified' | 'Unavailable' (RFC 46 §B).
+                    this.finish('verified', null, 'salesforce');
                 }
             } else if (vs.status === 'Failed' || vs.status === 'Blocked' || vs.status === 'Expired') {
                 this.finish('failed', String(vs.status).toLowerCase());
