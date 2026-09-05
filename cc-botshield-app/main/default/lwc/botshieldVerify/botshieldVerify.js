@@ -1,6 +1,6 @@
 import { LightningElement, api } from 'lwc';
 import getVerificationStatus from '@salesforce/apex/BotShieldCensusCheckout.getVerificationStatus';
-import { ROBOT_ICON_SVG, SHIELD_CHECK_SVG, SHIELD_X_SVG, SPINNER_SVG, MULTIPASS_CARD_SVG, CENSUS_LOGO_SVG } from './assets';
+import { USER_IDLE_SVG, USER_VERIFIED_SVG, USER_FAILED_SVG, BOTSHIELD_WORDMARK_SVG } from './assets';
 
 /**
  * <c-botshield-verify> — the Salesforce port of BotShield's <botshield-verify>
@@ -31,20 +31,23 @@ import { ROBOT_ICON_SVG, SHIELD_CHECK_SVG, SHIELD_X_SVG, SPINNER_SVG, MULTIPASS_
  *   verifyfailure {reason}, verifycheckout {requestId, token, state}, verifyreset.
  */
 
-const STATE_LABEL = {
-    idle: 'Verify human with BotShield',
+// Figma "Verify you’re human" (4242:4074): the title never changes; the user
+// glyph + status line carry the state. multipass_active is the same surface as
+// verified (a returning BotShield ID) — state symbol kept, label conformed.
+const STATE_STATUS = {
+    idle: 'Tap to confirm',
     verifying: 'Verifying…',
-    verified: 'Human Verified',
-    multipass_active: 'MultiPass Active',
-    failed: 'Presence Unavailable'
+    verified: 'You’re verified',
+    multipass_active: 'You’re verified',
+    failed: 'Unavailable'
 };
 
 const ICONS = {
-    idle: ROBOT_ICON_SVG,
-    verifying: SPINNER_SVG,
-    verified: SHIELD_CHECK_SVG,
-    multipass_active: MULTIPASS_CARD_SVG,
-    failed: SHIELD_X_SVG
+    idle: USER_IDLE_SVG,
+    verifying: USER_IDLE_SVG,
+    verified: USER_VERIFIED_SVG,
+    multipass_active: USER_VERIFIED_SVG,
+    failed: USER_FAILED_SVG
 };
 
 // Wall-clock cap for a pending verification — mirrors the SDK (WG expires the
@@ -107,7 +110,8 @@ export default class BotshieldVerify extends LightningElement {
     get rootClass() {
         return `bs-root theme-${this.theme || 'light'} state-${this.state}`;
     }
-    get label() { return STATE_LABEL[this.state]; }
+    get statusText() { return STATE_STATUS[this.state]; }
+    get ariaLabel() { return `Verify you’re human — ${this.statusText}`; }
     get isResolved() { return this.state === 'verified' || this.state === 'multipass_active'; }
     get buttonDisabled() { return this.state === 'verifying'; }
     get checkoutDisabled() {
@@ -116,8 +120,7 @@ export default class BotshieldVerify extends LightningElement {
     }
     get showConfirming() { return this.confirming; }
     get showCheckout() { return !this.hideCheckout; }
-    get svTop() { return this.isResolved ? 'Add to BotShield' : 'Stay Verified with BotShield'; }
-    get modalTitle() { return this.pushedToDevices > 0 ? 'Check your phone' : 'Add this site to your MultiPass'; }
+    get modalTitle() { return this.pushedToDevices > 0 ? 'Check your phone' : 'Verify you’re human'; }
     get showPushHint() { return this.pushedToDevices > 0; }
     get partnerDisplay() {
         if (this.partnerName) return this.partnerName;
@@ -134,10 +137,8 @@ export default class BotshieldVerify extends LightningElement {
             icon.innerHTML = ICONS[this.state];
             icon.dataset.state = this.state;
         }
-        const logo = this.template.querySelector('.bs-census-logo');
-        if (logo && !logo.dataset.done) { logo.innerHTML = CENSUS_LOGO_SVG; logo.dataset.done = '1'; }
-        const sv = this.template.querySelector('.bs-sv-icon');
-        if (sv && !sv.dataset.done) { sv.innerHTML = MULTIPASS_CARD_SVG; sv.dataset.done = '1'; }
+        const wordmark = this.template.querySelector('.bs-wordmark');
+        if (wordmark && !wordmark.dataset.done) { wordmark.innerHTML = BOTSHIELD_WORDMARK_SVG; wordmark.dataset.done = '1'; }
     }
 
     disconnectedCallback() { this.stopWatching(); }
