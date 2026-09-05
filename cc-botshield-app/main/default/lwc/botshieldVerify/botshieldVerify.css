@@ -152,11 +152,34 @@
   text-overflow: ellipsis;
 }
 
-    <span style="position:relative;flex:none;width:70px;height:40px;pointer-events:none">
-      ${PG_BOTSHIELD_WORDMARK_SVG}
-      <span aria-hidden="true" style="position:absolute;top:29px;right:0;font-size:4px;font-weight:500;line-height:5px;letter-spacing:0.43px;text-transform:uppercase;color:${tokens.caption};white-space:nowrap">Privacy | Terms</span>
-    </span>
-  `;
+/* BotShield lockup — right edge (Figma group 4313:3763). The WORDMARK is what
+   centres on the two text lines (Figma: wordmark centre = text-block centre);
+   the "PRIVACY | TERMS" caption hangs 2px beneath it and is out of the
+   centring math. Integer geometry on purpose: the row is 40px tall, the
+   wordmark sits at y 14..27 and the caption at 29..34 — fractional offsets
+   blur the vectors at 1x (Paul, 9/5: "very grainy"). */
+.bs-lockup {
+  position: relative;
+  flex: none;
+  width: 70px;
+  height: 40px;
+  pointer-events: none;
+}
+.bs-wordmark { display: block; line-height: 0; }
+.bs-lockup svg { position: absolute; top: 14px; right: 0; display: block; width: 70px; height: 13px; }
+.bs-lockup-caption {
+  position: absolute;
+  top: 29px;
+  right: 0;
+  font-size: 4px;
+  font-weight: 500;
+  line-height: 5px;
+  letter-spacing: 0.43px;
+  text-transform: uppercase;
+  color: var(--bs-lockup-caption);
+  white-space: nowrap;
+}
+
 .bs-token-input {
   display: none;
 }
