@@ -3,7 +3,7 @@
 Demo-only metadata that wires **BotShield** into the Coral Cloud sample. It depends on the
 **BotShield managed package** (`botshield` namespace) being installed first — see the root README.
 
-- `lwc/coralCart` — Shopify-style cart drawer; hosts the package's `botshield-verify` Census widget as the checkout gate; Cancel & refund on the confirmation screen.
+- `lwc/coralCart` — Shopify-style cart drawer; hosts the package's `botshield-verify` Human Verification widget as the checkout gate; Cancel & refund on the confirmation screen.
 - `classes/BotShieldCensusCheckout` — Census-gated checkout (row-gated on `BotShield_Census__c`), cancellation start/status.
 - `classes/Coral*Action` + `cc-service-app/genAiFunctions/Coral_*` — site-agent actions (list/cancel/refund status).
 - `flows/BotShield_Cancel_Booking_With_Refund` — Agents Ask refund co-sign (pause/resume on the package's platform event).

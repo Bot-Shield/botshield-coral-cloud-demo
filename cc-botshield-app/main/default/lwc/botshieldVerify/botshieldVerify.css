@@ -1,4 +1,4 @@
-/* Ported verbatim from botshield-sdk-embed/src/botshield-verify.ts STYLES (v3).
+/* Ported verbatim from botshield-sdk-embed/src/botshield-verify.ts STYLES (RFC 116 card, 2026-09-05).
    :host([theme=…][state=…]) selectors became .bs-root.theme-…/.state-… because
    LWC components don't reflect state onto their host element. Values are the
    SDK's — do not restyle here. */
@@ -12,8 +12,7 @@
 /* Trunk container — the component's top-level rows stack VERTICALLY here, so the
    layout is robust even if the host element is set to display:flex/grid by the
    partner page (outer-document styles override :host). The host then has a
-   single child (.bs-root), and .bs-root stacks verify / checkout / footer.
-   ONLY .bs-footer is a horizontal row. */
+   single child (.bs-root), and .bs-root stacks verify / checkout. */
 .bs-root {
   display: flex;
   flex-direction: column;
@@ -21,151 +20,66 @@
   width: 100%;
 }
 
-/* ---------- Default (light idle) ---------- */
+/* ---------- Theme tokens ----------
+   Figma "Verify you’re human" (4242:4074; states 4214:2987 / :2996 / :2978): the
+   container does NOT recolor per state — only the user glyph and the status
+   line change. Light theme = same geometry, light surfaces, black wordmark. */
 .bs-root, .bs-root.theme-light, .bs-root.theme-auto {
-  --bs-bg: #f9f9f9;
-  --bs-bg-hover: #dfdfdf;
-  --bs-border: #aaaaaa;
-  --bs-text: #000000;
-  --bs-icon-color: #147baa;
+  --bs-bg: #fafafa;
+  --bs-bg-hover: #f2f2f2;
+  --bs-border: #d6d6d6;
+  --bs-title: #000000;
+  --bs-status: #8a8d93;
+  --bs-wordmark-fill: #111111;
+  --bs-lockup-caption: rgba(0, 0, 0, 0.7);
+  --bs-idle-fill: #6b7280;
+  --bs-idle-opacity: 1;
 }
 .bs-root.theme-dark {
-  --bs-bg: #0b0b0c;
-  --bs-bg-hover: #1e1e1e;
-  --bs-border: #373a41;
-  --bs-text: #cecfd2;
-  --bs-icon-color: #147baa;
+  --bs-bg: #101317;
+  --bs-bg-hover: #151920;
+  --bs-border: #2a2f38;
+  --bs-title: #ffffff;
+  --bs-status: #8a8d93;
+  --bs-wordmark-fill: url(#sf-wm-g);
+  --bs-lockup-caption: rgba(255, 255, 255, 0.7);
+  --bs-idle-fill: #545862;
+  --bs-idle-opacity: 1;
 }
 @media (prefers-color-scheme: dark) {
   .bs-root.theme-auto {
-    --bs-bg: #0b0b0c;
-    --bs-bg-hover: #1e1e1e;
-    --bs-border: #373a41;
-    --bs-text: #cecfd2;
-    --bs-icon-color: #147baa;
+    --bs-bg: #101317;
+    --bs-bg-hover: #151920;
+    --bs-border: #2a2f38;
+    --bs-title: #ffffff;
+    --bs-status: #8a8d93;
+    --bs-wordmark-fill: url(#sf-wm-g);
+    --bs-lockup-caption: rgba(255, 255, 255, 0.7);
+    --bs-idle-fill: #545862;
+    --bs-idle-opacity: 1;
   }
 }
 
-/* ---------- Verified state (light) ---------- */
-.bs-root.state-verified,
-.bs-root.theme-light.state-verified,
-.bs-root.theme-auto.state-verified {
-  --bs-bg: rgba(15, 195, 105, 0.2);
-  --bs-bg-hover: rgba(15, 195, 105, 0.2);
-  --bs-border: #0fc369;
-  --bs-text: #06ab59;
-  --bs-icon-color: #1cb86a;
-}
-.bs-root.theme-dark.state-verified {
-  --bs-bg: rgba(35, 203, 120, 0.2);
-  --bs-bg-hover: rgba(35, 203, 120, 0.2);
-  --bs-border: rgba(35, 203, 120, 0.5);
-  --bs-text: #3aeb8f;
-  --bs-icon-color: #40d78c;
-}
-@media (prefers-color-scheme: dark) {
-  .bs-root.theme-auto.state-verified {
-    --bs-bg: rgba(35, 203, 120, 0.2);
-    --bs-bg-hover: rgba(35, 203, 120, 0.2);
-    --bs-border: rgba(35, 203, 120, 0.5);
-    --bs-text: #3aeb8f;
-    --bs-icon-color: #40d78c;
-  }
-}
-
-/* ---------- MultiPass Active state (light) ---------- */
-/* Story 7.4 visual — Figma file OsQQtkzL52OOOGVnWNwDFX nodes 830:5341
-   (light) / 830:5306 (dark). Lower-saturation green tint than Story 7.3
-   (verified) plus a 1.5px tinted border — communicates "credential
-   continuity" rather than "live presence." Per App Spec line 237 every
-   MultiPass-layer surface uses the Active/Not Active vocabulary. */
-.bs-root.state-multipass_active,
-.bs-root.theme-light.state-multipass_active,
-.bs-root.theme-auto.state-multipass_active {
-  --bs-bg: rgba(15, 195, 105, 0.15);
-  --bs-bg-hover: rgba(15, 195, 105, 0.15);
-  --bs-border: rgba(15, 195, 105, 0.3);
-  --bs-text: #06ab59;
-  --bs-icon-color: #0fa675;
-}
-.bs-root.theme-dark.state-multipass_active {
-  --bs-bg: rgba(35, 203, 120, 0.2);
-  --bs-bg-hover: rgba(35, 203, 120, 0.2);
-  --bs-border: rgba(35, 203, 120, 0.3);
-  --bs-text: #3aeb8f;
-  --bs-icon-color: #40d78c;
-}
-@media (prefers-color-scheme: dark) {
-  .bs-root.theme-auto.state-multipass_active {
-    --bs-bg: rgba(35, 203, 120, 0.2);
-    --bs-bg-hover: rgba(35, 203, 120, 0.2);
-    --bs-border: rgba(35, 203, 120, 0.3);
-    --bs-text: #3aeb8f;
-    --bs-icon-color: #40d78c;
-  }
-}
-/* 1.5px border on multipass_active per Figma (other states use 1px). */
-.bs-root.state-multipass_active .bs-btn {
-  border-width: 1.5px;
-}
-
-/* ---------- Unavailable / failed state (light) ---------- */
-.bs-root.state-failed,
-.bs-root.theme-light.state-failed,
-.bs-root.theme-auto.state-failed {
-  --bs-bg: rgba(255, 59, 48, 0.2);
-  --bs-bg-hover: rgba(255, 59, 48, 0.28);
-  --bs-border: #f9291d;
-  --bs-text: #da1d12;
-  --bs-icon-color: #ff3b30;
-}
-.bs-root.theme-dark.state-failed {
-  --bs-bg: rgba(255, 59, 48, 0.2);
-  --bs-bg-hover: rgba(255, 59, 48, 0.28);
-  --bs-border: rgba(255, 59, 48, 0.5);
-  --bs-text: #ff3b30;
-  --bs-icon-color: #ff3b30;
-}
-@media (prefers-color-scheme: dark) {
-  .bs-root.theme-auto.state-failed {
-    --bs-bg: rgba(255, 59, 48, 0.2);
-    --bs-bg-hover: rgba(255, 59, 48, 0.28);
-    --bs-border: rgba(255, 59, 48, 0.5);
-    --bs-text: #ff3b30;
-    --bs-icon-color: #ff3b30;
-  }
-}
-
-/* ---------- Button ---------- */
+/* ---------- Button (the whole card is the control) ----------
+   Figma 4242:4074: 320x70, padding 14px 12px 14px 16px, gap 13px, radius 6px,
+   1px border. */
 .bs-btn {
+  position: relative;
   display: flex;
   width: 100%;
   align-items: center;
-  justify-content: center;
-  gap: 12px;
-  padding: 10px 16px;
+  gap: 13px;
+  padding: 14px 12px 14px 16px;
   border: 1px solid var(--bs-border);
   background: var(--bs-bg);
-  color: var(--bs-text);
-  border-radius: 10px;
-  /* Skeumorphic triplet from Figma: subtle drop + inner border + inner bottom.
-     Drop is functionally invisible (alpha 0) but kept for parity; inner shadows
-     give the pill its faint depth on light backgrounds. */
-  box-shadow:
-    0 1px 2px 0 rgba(249, 250, 251, 0),
-    inset 0 0 0 1px rgba(12, 14, 18, 0.18),
-    inset 0 -2px 0 0 rgba(12, 14, 18, 0.05);
+  border-radius: 6px;
   font-family: inherit;
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 24px;
-  letter-spacing: 0;
+  text-align: left;
   cursor: pointer;
-  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
   user-select: none;
   box-sizing: border-box;
   outline: none;
-  white-space: nowrap;
   appearance: none;
   -webkit-appearance: none;
 }
@@ -187,30 +101,83 @@
   background: var(--bs-bg);
 }
 
-.bs-icon {
-  display: inline-flex;
+/* Left group: glyph + copy, 12px apart, takes the row. */
+.bs-main {
+  display: flex;
+  flex: 1 1 0;
+  min-width: 0;
   align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  width: 20px;
-  height: 22px;
-  color: var(--bs-icon-color);
-  line-height: 0;
-}
-.bs-icon svg {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-.bs-label {
-  display: inline-block;
+  gap: 12px;
 }
 
-.bs-spin {
-  animation: bs-rotate 0.8s linear infinite;
+/* Glyph wrapper 26x40 (no well in 4242:4074); glyph 24x24 at y 7. */
+.bs-iconwrap {
+  display: flex;
+  flex: none;
+  align-items: flex-start;
+  justify-content: center;
+  width: 26px;
+  height: 40px;
+  padding-top: 7px;
+  box-sizing: border-box;
+  line-height: 0;
 }
-@keyframes bs-rotate {
-  to { transform: rotate(360deg); }
+.bs-icon { display: block; line-height: 0; }
+.bs-icon svg { display: block; width: 24px; height: 24px; }
+.bs-root.state-verifying .bs-icon svg { animation: bs-pulse 1.2s ease-in-out infinite; }
+
+/* Title 14px/24px semibold + status 12px/15px regular. */
+.bs-text {
+  display: flex;
+  flex: 1 1 0;
+  min-width: 0;
+  flex-direction: column;
+}
+.bs-title {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 24px;
+  color: var(--bs-title);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.bs-status {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 15px;
+  color: var(--bs-status);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* BotShield lockup — right edge (Figma group 4313:3763). The WORDMARK is what
+   centres on the two text lines (Figma: wordmark centre = text-block centre);
+   the "PRIVACY | TERMS" caption hangs 2px beneath it and is out of the
+   centring math. Integer geometry on purpose: the row is 40px tall, the
+   wordmark sits at y 14..27 and the caption at 29..34 — fractional offsets
+   blur the vectors at 1x (Paul, 9/5: "very grainy"). */
+.bs-lockup {
+  position: relative;
+  flex: none;
+  width: 70px;
+  height: 40px;
+  pointer-events: none;
+}
+.bs-wordmark { display: block; line-height: 0; }
+.bs-lockup svg { position: absolute; top: 14px; right: 0; display: block; width: 70px; height: 13px; }
+.bs-lockup-caption {
+  position: absolute;
+  top: 29px;
+  right: 0;
+  font-size: 4px;
+  font-weight: 500;
+  line-height: 5px;
+  letter-spacing: 0.43px;
+  text-transform: uppercase;
+  color: var(--bs-lockup-caption);
+  white-space: nowrap;
 }
 
 .bs-token-input {
@@ -253,73 +220,6 @@
 .bs-checkout-btn:active:not(:disabled) { transform: scale(0.985); }
 .bs-checkout-btn:focus-visible { outline: 2px solid #40d78c; outline-offset: 2px; }
 .bs-checkout-btn:disabled { opacity: var(--bs-checkout-disabled-opacity); cursor: not-allowed; }
-
-/* ---------- Footer row: Census branding (left) + MultiPass CTA (right) ----------
-   Flex row, vertically centered to each other, contents centered. */
-.bs-footer {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 30px;
-  margin-top: 14px;
-}
-
-/* "Powered by Census" attribution lockup — sized to the Figma footer lockup
-   ~86 x 31 (node 1498:18815/16). Wordmark themes via currentColor; check green. */
-.bs-branding {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1px;
-  width: 86.16px;
-  color: var(--bs-text);
-}
-.bs-powered { font-size: 7px; font-weight: 500; letter-spacing: 0.02em; line-height: 1; opacity: 0.8; }
-.bs-census-logo { display: block; width: 86.16px; line-height: 0; }
-.bs-census-logo svg { display: block; width: 86.16px; height: auto; }
-.bs-brand-links { display: flex; align-items: center; justify-content: center; gap: 4px; font-size: 9px; font-weight: 500; line-height: 11px; }
-.bs-brand-links a { color: inherit; text-decoration: none; }
-.bs-brand-links a:hover { text-decoration: underline; }
-.bs-brand-links a:focus-visible { outline: 2px solid #40d78c; outline-offset: 1px; border-radius: 2px; }
-.bs-brand-sep { opacity: 0.6; }
-
-/* ---------- MultiPass CTA (black pill, state-driven label) ----------
-   idle → "Works with BotShield" / "MultiPass"; resolved → "Add to BotShield" /
-   "MultiPass". Override via stayverified-label. Hooks: --bs-sv-*, part. */
-.bs-stayverified-btn {
-  --bs-sv-bg: #000000;
-  --bs-sv-border: #373a41;
-  --bs-sv-border-hover: #4a4e57;
-  --bs-sv-radius: 9px;
-  --bs-sv-text-color: #ffffff;
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  gap: 9px;
-  padding: 9px 14px;
-  background: var(--bs-sv-bg);
-  border: 1px solid var(--bs-sv-border);
-  border-radius: var(--bs-sv-radius);
-  box-shadow:
-    0 1px 2px 0 rgba(249, 250, 251, 0),
-    inset 0 0 0 1px rgba(12, 14, 18, 0.18),
-    inset 0 -2px 0 0 rgba(12, 14, 18, 0.05);
-  cursor: default;
-  font-family: inherit;
-  user-select: none;
-  box-sizing: border-box;
-}
-/* Static branding lockup — not interactive (the functional "Add to MultiPass"
-   add-via-app flow is E1–E4, pending Product+Design). No hover/active/focus. */
-.bs-sv-icon { flex: none; display: block; line-height: 0; }
-.bs-sv-text { display: flex; flex-direction: column; align-items: flex-start; line-height: 1; text-align: left; }
-.bs-sv-top { color: var(--bs-sv-text-color); font-size: 8px; font-weight: 500; letter-spacing: 0.01em; margin-bottom: 2px; white-space: nowrap; }
-.bs-sv-wordmark { color: var(--bs-sv-text-color); font-size: 15px; font-weight: 700; letter-spacing: -0.01em; white-space: nowrap; }
-/* Single-line variant when stayverified-label overrides the canon stacked label. */
-.bs-sv-text--single { flex-direction: row; align-items: center; }
-.bs-sv-text--single .bs-sv-wordmark { font-size: 13px; }
 
 /* ---------- QR modal (SDK showQrModal styles) ---------- */
 .bs-qr-modal-overlay {
@@ -399,13 +299,3 @@
    pill resolving via MultiPass and the org row landing. */
 .bs-confirming { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 8px; font-size: 12px; color: #8f979e; }
 .bs-confirming .bs-modal-pulse { margin: 0; }
-
-/* Census attribution lockup is BRAND, not state: it never turns green/red with
-   the pill. Theme-only colour (mirrors the SDK fix of 2026-08-17). */
-.bs-root .bs-branding,
-.bs-root.theme-light .bs-branding,
-.bs-root.theme-auto .bs-branding { color: #000000; }
-.bs-root.theme-dark .bs-branding { color: #cecfd2; }
-@media (prefers-color-scheme: dark) {
-  .bs-root.theme-auto .bs-branding { color: #cecfd2; }
-}

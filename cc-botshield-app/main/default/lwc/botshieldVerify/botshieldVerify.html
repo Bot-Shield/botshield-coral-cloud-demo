@@ -1,10 +1,19 @@
 <template>
     <div class={rootClass} part="root">
-        <!-- (1) The verify pill — states/labels/icons are the SDK's, verbatim -->
-        <button class="bs-btn" part="container" type="button" aria-live="polite"
+        <!-- (1) The verify card — Figma 4242:4074, states/copy are the SDK's verbatim -->
+        <button class="bs-btn" part="container" type="button" aria-live="polite" aria-label={ariaLabel}
                 onclick={handleVerifyClick}>
-            <span class="bs-icon" lwc:dom="manual"></span>
-            <span class="bs-label">{label}</span>
+            <span class="bs-main">
+                <span class="bs-iconwrap"><span class="bs-icon" lwc:dom="manual"></span></span>
+                <span class="bs-text">
+                    <span class="bs-title">Verify you’re human</span>
+                    <span class="bs-status">{statusText}</span>
+                </span>
+            </span>
+            <span class="bs-lockup" part="branding">
+                <span class="bs-wordmark" lwc:dom="manual"></span>
+                <span class="bs-lockup-caption" aria-hidden="true">Privacy | Terms</span>
+            </span>
         </button>
 
         <!-- (2) Component-owned, verified-gated checkout button (RFC 07) -->
@@ -21,24 +30,6 @@
             </template>
         </template>
 
-        <!-- (3) Footer: Census attribution + MultiPass lockup (static branding) -->
-        <div class="bs-footer" part="footer">
-            <div class="bs-branding" part="branding">
-                <span class="bs-census-logo" lwc:dom="manual"></span>
-                <span class="bs-brand-links">
-                    <a href="https://botshield.ai/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy</a>
-                    <span class="bs-brand-sep" aria-hidden="true">|</span>
-                    <a href="https://botshield.ai/terms" target="_blank" rel="noopener noreferrer">Terms</a>
-                </span>
-            </div>
-            <div class="bs-stayverified-btn" part="stayverified" role="img" aria-label="Stay Verified with BotShield MultiPass">
-                <span class="bs-sv-icon" lwc:dom="manual"></span>
-                <span class="bs-sv-text">
-                    <span class="bs-sv-top">{svTop}</span>
-                    <span class="bs-sv-wordmark">MultiPass</span>
-                </span>
-            </div>
-        </div>
     </div>
 
     <!-- QR modal — the SDK's #bs-qr-modal-overlay, markup + copy verbatim.
@@ -55,7 +46,7 @@
                             <span>botShield</span>
                         </div>
                         <div class="bs-modal-stack">
-                            <div class="bs-modal-badge">Add to MultiPass</div>
+                            <div class="bs-modal-badge">BotShield Human Verification</div>
                             <div class="bs-modal-title">{modalTitle}</div>
                             <div class="bs-modal-desc"><strong>{partnerDisplay}</strong> is asking BotShield to confirm you're human. BotShield never shares your identity — only a signal that you passed.</div>
                         </div>
@@ -72,7 +63,7 @@
                             </div>
                             <div class="bs-modal-step">
                                 <div class="bs-modal-step-num">2</div>
-                                <div><div class="bs-modal-step-title">Confirm with Face ID</div><div class="bs-modal-step-desc">One biometric check ties this site to your MultiPass</div></div>
+                                <div><div class="bs-modal-step-title">Confirm with Face ID</div><div class="bs-modal-step-desc">One biometric check links this site to your BotShield ID</div></div>
                             </div>
                             <div class="bs-modal-step">
                                 <div class="bs-modal-step-num">3</div>
